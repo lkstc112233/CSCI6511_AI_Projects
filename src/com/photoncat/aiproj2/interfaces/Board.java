@@ -16,6 +16,11 @@ public interface Board {
     int getSize();
 
     /**
+     * @return How many pieces needed to be consecutive to win.
+     */
+    int getM();
+
+    /**
      * @return piece at the given position
      */
     PieceType getPiece(int x, int y);
