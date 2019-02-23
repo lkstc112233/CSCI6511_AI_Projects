@@ -1,7 +1,7 @@
 package com.photoncat.aiproj2.interfaces;
 
 /**
- * Interface of the board. Supports getting piece, checking if a player wins, and putting a piece onto the board.
+ * Interface of the board. Supports getting piece, checking if a player wins, putting a piece onto the board, and taking back a move.
  */
 public interface Board {
     enum PieceType {
@@ -36,4 +36,9 @@ public interface Board {
      * @return true if succeed, false if the cell is already occupied.
      */
     boolean putPiece(int x, int y);
+
+    /**
+     * Takes back one move from {@link Board#putPiece(int, int)}.
+     */
+    void takeBack();
 }
