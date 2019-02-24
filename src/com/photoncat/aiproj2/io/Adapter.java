@@ -15,11 +15,6 @@ public interface Adapter {
     int createGame(int otherTeamId, int boardSize, int target);
 
     /**
-     * Adds into an existing game where we play as second player.
-     */
-    void addGame(int gameId);
-
-    /**
      * Makes a move at given (x, y).
      */
     void moveAt(int gameId, int x, int y);
