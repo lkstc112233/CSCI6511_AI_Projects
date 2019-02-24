@@ -14,7 +14,7 @@ public class Game extends Thread{
      */
     public Game(Adapter ioAdapter, int otherTeamId, int boardSize, int target) {
         this.ioAdapter = ioAdapter;
-        ioAdapter.createGame(otherTeamId, boardSize, target);
+        gameId = ioAdapter.createGame(otherTeamId, boardSize, target);
     }
 
     /**
