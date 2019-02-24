@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.game;
 
+import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.io.Adapter;
 
 /**
@@ -26,5 +27,16 @@ public class Game extends Thread{
     }
 
     @Override
-    public void run() {}
+    public void run() {
+        Board board = ioAdapter.getBoard(gameId);
+        while (board != null && !board.gameover()) {
+            // TODO: Decide where to move.
+            int x = 0;
+            int y = 0;
+            ioAdapter.moveAt(gameId, x, y);
+            do {
+                board = ioAdapter.getBoard(gameId);
+            } while (board == null);
+        }
+    }
 }
