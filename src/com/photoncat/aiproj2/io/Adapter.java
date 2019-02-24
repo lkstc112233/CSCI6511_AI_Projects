@@ -20,6 +20,11 @@ public interface Adapter {
     void moveAt(int gameId, int x, int y);
 
     /**
+     * @return who moved last. If no one moved, {@link Board.PieceType#CROSS} will be returned.
+     */
+    Board.PieceType getLastMove(int gameId);
+
+    /**
      * Gets the board of a given game.
      */
     Board getBoard(int gameId);
