@@ -75,12 +75,12 @@ public class SimpleBoard implements Board {
                 continuous += 1;
                 offset += 1;
             }
-            offset = x - 1;
+            offset = -1;
             while (checker.check(offset, x, y)) {
                 continuous += 1;
                 offset -= 1;
             }
-            if (continuous > getM()) {
+            if (continuous >= getM()) {
                 winner = next;
                 break;
             }
