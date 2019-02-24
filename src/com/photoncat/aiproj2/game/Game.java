@@ -19,8 +19,6 @@ public class Game extends Thread{
 
     /**
      * Join another game.
-     * @param ioAdapter
-     * @param gameId
      */
     public Game(Adapter ioAdapter, int gameId) {
         this.ioAdapter = ioAdapter;
