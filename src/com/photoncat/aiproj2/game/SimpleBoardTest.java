@@ -4,6 +4,12 @@ import com.photoncat.aiproj2.interfaces.Board;
 
 public class SimpleBoardTest {
     public static void main(String[] args) {
+        test3x3();
+        test5x5();
+        System.out.println("All test passed");
+    }
+
+    private static void test3x3() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
         Board simpleBoard = new SimpleBoard(3,3);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
@@ -23,6 +29,31 @@ public class SimpleBoardTest {
         if (!simpleBoard.putPiece(2, 2)) throw new AssertionError(); // O, wins
         if (simpleBoard.wins() != Board.PieceType.CIRCLE) throw new AssertionError();
         if (!simpleBoard.gameover()) throw new AssertionError();
-        System.out.println("All test passed");
+    }
+
+    private static void test5x5() {
+        // Test based on a 5x5 board.
+        Board simpleBoard = new SimpleBoard(5,4);
+        if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(0, 1)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(0, 0)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(1, 2)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(3, 3)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(2, 3)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(2, 2)) throw new AssertionError(); // O, wins
+        if (simpleBoard.wins() != Board.PieceType.CIRCLE) throw new AssertionError();
+        if (!simpleBoard.gameover()) throw new AssertionError();
     }
 }
