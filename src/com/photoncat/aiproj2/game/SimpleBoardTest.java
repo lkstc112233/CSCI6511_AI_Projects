@@ -6,7 +6,8 @@ public class SimpleBoardTest {
     public static void main(String[] args) {
         test3x3();
         test5x5();
-        testTakeback();
+        testDraw();
+        testTakeBack();
         System.out.println("All test passed");
     }
 
@@ -32,7 +33,7 @@ public class SimpleBoardTest {
         if (!simpleBoard.gameover()) throw new AssertionError();
     }
 
-    private static void testTakeback() {
+    private static void testTakeBack() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
         Board simpleBoard = new SimpleBoard(3,3);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
@@ -76,6 +77,38 @@ public class SimpleBoardTest {
         if (simpleBoard.gameover()) throw new AssertionError();
         if (!simpleBoard.putPiece(2, 0)) throw new AssertionError(); // X, wins
         if (simpleBoard.wins() != Board.PieceType.CROSS) throw new AssertionError();
+        if (!simpleBoard.gameover()) throw new AssertionError();
+    }
+
+    private static void testDraw() {
+        // Test based on a 3x3 board. aka classic tic-tac-toe
+        Board simpleBoard = new SimpleBoard(3,3);
+        if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(0, 0)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(1, 0)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(1, 2)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(0, 1)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(2, 1)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(2, 0)) throw new AssertionError(); // O
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(0, 2)) throw new AssertionError(); // X
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
+        if (simpleBoard.gameover()) throw new AssertionError();
+        if (!simpleBoard.putPiece(2, 2)) throw new AssertionError(); // O, draws
+        if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
         if (!simpleBoard.gameover()) throw new AssertionError();
     }
 
