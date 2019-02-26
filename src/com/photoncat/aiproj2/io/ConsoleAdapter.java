@@ -12,7 +12,7 @@ import java.util.Scanner;
  * This is a console adapter for development.
  */
 public class ConsoleAdapter implements Adapter{
-    Map<Integer, Board> games = new HashMap<>();
+    private Map<Integer, Board> games = new HashMap<>();
     @Override
     public int createGame(int otherTeamId, int boardSize, int target) {
         games.put(0, new SimpleBoard(boardSize, target));
