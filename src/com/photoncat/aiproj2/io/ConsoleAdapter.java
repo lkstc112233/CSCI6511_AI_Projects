@@ -13,9 +13,12 @@ import java.util.Scanner;
  */
 public class ConsoleAdapter implements Adapter{
     private Map<Integer, Board> games = new HashMap<>();
+    private Map<Integer, Boolean> crossPlaying = new HashMap<>();
+
     @Override
     public int createGame(int otherTeamId, int boardSize, int target) {
         games.put(0, new SimpleBoard(boardSize, target));
+        crossPlaying.put(0, false);
         return 0;
     }
 
@@ -26,21 +29,25 @@ public class ConsoleAdapter implements Adapter{
 
     @Override
     public Board.PieceType getLastMove(int gameId) {
-        return Board.PieceType.CROSS;
+        return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
     }
 
     @Override
     public Board getBoard(int gameId) {
-        // Get console input.
         var board = games.get(gameId);
-        System.out.println(board.toString());
-        System.out.println("Input x and y: ");
-        int x;
-        int y;
-        Scanner scanner = new Scanner(System.in);
-        x = scanner.nextInt();
-        y = scanner.nextInt();
-        board.putPiece(x, y);
+        if (!crossPlaying.get(gameId)) {
+            crossPlaying.put(gameId, true);
+        } else {
+            // Get console input.
+            System.out.println(board.toString());
+            System.out.println("Input x and y: ");
+            int x;
+            int y;
+            Scanner scanner = new Scanner(System.in);
+            x = scanner.nextInt();
+            y = scanner.nextInt();
+            board.putPiece(x, y);
+        }
         return board;
     }
 }
