@@ -5,6 +5,8 @@ import com.photoncat.aiproj2.interfaces.Board;
 public class SimpleBoard implements Board {
     private PieceType[][] board;
     private int m;
+    private int maximumSteps = 0;
+    private int steps = 0;
     private PieceType winner = null;
     private PieceType next = PieceType.CIRCLE;
     public SimpleBoard(int size, int m) {
@@ -15,6 +17,7 @@ public class SimpleBoard implements Board {
             }
         }
         this.m = m;
+        this.maximumSteps = size * size;
     }
 
     @Override
@@ -84,6 +87,10 @@ public class SimpleBoard implements Board {
                 winner = next;
                 break;
             }
+        }
+        steps += 1;
+        if (steps >= maximumSteps && winner == null) {
+            winner = PieceType.NONE;
         }
         next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
         return true;
