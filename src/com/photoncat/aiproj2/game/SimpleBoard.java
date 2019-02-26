@@ -92,12 +92,16 @@ public class SimpleBoard implements Board {
         if (steps >= maximumSteps && winner == null) {
             winner = PieceType.NONE;
         }
-        next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
+        toggleNext();
         return true;
     }
 
     @Override
     public void takeBack() {
         throw new UnsupportedOperationException("This method is not implemented yet.");
+    }
+
+    private void toggleNext() {
+        next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
     }
 }
