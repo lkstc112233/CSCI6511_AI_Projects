@@ -3,6 +3,8 @@ package com.photoncat.aiproj2.game;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.io.Adapter;
 
+import java.util.Random;
+
 /**
  * This is the gaming thread. Each game is handled in a separate thread to support functions of polling.
  */
@@ -32,8 +34,14 @@ public class Game extends Thread{
         Board board = ioAdapter.getBoard(gameId);
         while (board != null && !board.gameover()) {
             // TODO: Decide where to move.
+            // Now it's just a random function.
+            Random random = new Random(0xDEADBEEF);
             int x = 0;
             int y = 0;
+            do {
+                x = random.nextInt(board.getSize());
+                y = random.nextInt(board.getSize());
+            } while (board.getPiece(x, y) != Board.PieceType.NONE);
             ioAdapter.moveAt(gameId, x, y);
             while (ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
