@@ -124,4 +124,26 @@ public class SimpleBoard implements Board {
     private void toggleNext() {
         next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (var line : board) {
+            for (var piece : line) {
+                switch(piece) {
+                    case NONE:
+                        sb.append('-');
+                        break;
+                    case CROSS:
+                        sb.append('X');
+                        break;
+                    case CIRCLE:
+                        sb.append('O');
+                        break;
+                }
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
 }
