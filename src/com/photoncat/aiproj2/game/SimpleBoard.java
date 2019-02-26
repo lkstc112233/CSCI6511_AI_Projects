@@ -109,7 +109,10 @@ public class SimpleBoard implements Board {
 
     @Override
     public void takeBack() {
-        throw new UnsupportedOperationException("This method is not implemented yet.");
+        // Does nothing when take back 0-th step.
+        if (steps <= 0) {
+            return;
+        }
         toggleNext();
         int x = xSteps.pop();
         int y = ySteps.pop();
