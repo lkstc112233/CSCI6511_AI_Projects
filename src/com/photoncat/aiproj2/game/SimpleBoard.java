@@ -5,7 +5,7 @@ import com.photoncat.aiproj2.interfaces.Board;
 public class SimpleBoard implements Board {
     private PieceType[][] board;
     private int m;
-    private int maximumSteps = 0;
+    private int maximumSteps;
     private int steps = 0;
     private PieceType winner = null;
     private PieceType next = PieceType.CIRCLE;
