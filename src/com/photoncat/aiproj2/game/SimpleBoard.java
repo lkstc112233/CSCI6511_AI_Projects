@@ -2,11 +2,22 @@ package com.photoncat.aiproj2.game;
 
 import com.photoncat.aiproj2.interfaces.Board;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
+
 public class SimpleBoard implements Board {
     private PieceType[][] board;
     private int m;
+    private int maximumSteps;
+    private int steps = 0;
     private PieceType winner = null;
     private PieceType next = PieceType.CIRCLE;
+    // Using two lists to store x and y separately to avoid implementing a class.
+    // It's harmful to readability using classes like Map.Entry
+    private Stack<Integer> xSteps = new Stack<>();
+    private Stack<Integer> ySteps = new Stack<>();
     public SimpleBoard(int size, int m) {
         board = new PieceType[size][size];
         for (int i = 0; i < size; ++i) {
@@ -15,6 +26,7 @@ public class SimpleBoard implements Board {
             }
         }
         this.m = m;
+        this.maximumSteps = size * size;
     }
 
     @Override
@@ -75,22 +87,41 @@ public class SimpleBoard implements Board {
                 continuous += 1;
                 offset += 1;
             }
-            offset = x - 1;
+            offset = -1;
             while (checker.check(offset, x, y)) {
                 continuous += 1;
                 offset -= 1;
             }
-            if (continuous > getM()) {
+            if (continuous >= getM()) {
                 winner = next;
                 break;
             }
         }
-        next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
+        steps += 1;
+        xSteps.add(x);
+        ySteps.add(y);
+        if (steps >= maximumSteps && winner == null) {
+            winner = PieceType.NONE;
+        }
+        toggleNext();
         return true;
     }
 
     @Override
     public void takeBack() {
-        throw new UnsupportedOperationException("This method is not implemented yet.");
+        // Does nothing when take back 0-th step.
+        if (steps <= 0) {
+            return;
+        }
+        toggleNext();
+        int x = xSteps.pop();
+        int y = ySteps.pop();
+        steps -= 1;
+        board[x][y] = PieceType.NONE;
+        winner = null;
+    }
+
+    private void toggleNext() {
+        next = next == PieceType.CIRCLE ? PieceType.CROSS : PieceType.CIRCLE;
     }
 }
