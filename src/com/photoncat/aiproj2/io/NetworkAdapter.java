@@ -28,12 +28,12 @@ public class NetworkAdapter {
         File file = new File(args[0]);
         String username = "";
         String password = "";
-        int userId = -1;
+        String userId = "";
         String apiKey = "";
         try (Scanner scanner = new Scanner(file)){
             username = scanner.nextLine();
             password = scanner.nextLine();
-            userId = scanner.nextInt();
+            userId = scanner.nextLine();
             apiKey = scanner.nextLine();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class NetworkAdapter {
 
             // Include other payloads
             urlConnection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            urlConnection.addRequestProperty("userid", Integer.toString(userId));
+            urlConnection.addRequestProperty("userid", userId);
             urlConnection.addRequestProperty("x-api-key", apiKey);
 
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
