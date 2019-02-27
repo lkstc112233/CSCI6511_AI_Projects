@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.io;
 
 import java.io.*;
+import java.util.Base64;
 /**
  * The adapter to the p2p gaming server api.
  * http://www.notexponential.com/aip2pgaming/api/index.php
@@ -37,5 +38,8 @@ public class NetworkAdapter {
             System.err.println("Please check your input file format.\n Format: username, password, userId, api key, each in a separate line, without any leading or following spaces.");
             System.exit(987654321);
         }
+        String usernameColonPassword = username + ":" + password;
+        String basicAuthPayload = "Basic " + Base64.getEncoder().encodeToString(usernameColonPassword.getBytes());
+
     }
 }
