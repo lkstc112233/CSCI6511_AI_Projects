@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.io;
 
+import java.io.*;
 /**
  * The adapter to the p2p gaming server api.
  * http://www.notexponential.com/aip2pgaming/api/index.php
@@ -15,5 +16,26 @@ public class NetworkAdapter {
     private final static String SERVER_URL = "http://www.notexponential.com/aip2pgaming/api/index.php";
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.exit(0xDEADBEEF);
+        }
+        File file = new File(args[0]);
+        String username = "";
+        String password = "";
+        int userId = -1;
+        String apiKey = "";
+        try (Scanner scanner = new Scanner(file)){
+            username = scanner.nextLine();
+            password = scanner.nextLine();
+            userId = scanner.nextInt();
+            apiKey = scanner.nextLine();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(0x3f3f3f3f);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            System.err.println("Please check your input file format.\n Format: username, password, userId, api key, each in a separate line, without any leading or following spaces.");
+            System.exit(987654321);
+        }
     }
 }
