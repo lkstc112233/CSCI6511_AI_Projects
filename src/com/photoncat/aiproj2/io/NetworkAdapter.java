@@ -3,6 +3,7 @@ package com.photoncat.aiproj2.io;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -82,6 +83,72 @@ public class NetworkAdapter {
             urlConnection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             urlConnection.addRequestProperty("userid", userId);
             urlConnection.addRequestProperty("x-api-key", apiKey);
+
+            StringBuilder result = new StringBuilder();
+            // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
+            try (var httpResponseReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                String lineRead;
+                while ((lineRead = httpResponseReader.readLine()) != null) {
+                    result.append(lineRead);
+                    result.append('\n');
+                }
+            }
+            return result.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Rethrow so the program crashes.
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * A wrapper for the other post. It parses the args into the string format.
+     *
+     * There's NO protection. Do not pass attacking strings into this function.
+     */
+    private String post(Map<String, String> args) {
+        StringBuilder params = new StringBuilder();
+        String leadingChar = "";
+        for (var key : args.keySet()) {
+            params.append(leadingChar);
+            params.append(key);
+            params.append('=');
+            params.append(args.get(key));
+            leadingChar = "&";
+        }
+        return post(params.toString());
+    }
+
+    /**
+     * Send a post request to the api.
+     *
+     * @return the post result.
+     */
+    private String post(String args) {
+        // Connect to the web server endpoint
+        try {
+            URL serverUrl = new URL(SERVER_URL);
+            HttpURLConnection urlConnection = (HttpURLConnection) serverUrl.openConnection();
+
+            // Set HTTP method as POST
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoOutput(true);
+
+            // Include the HTTP Basic Authentication payload
+            urlConnection.addRequestProperty("Authorization", basicAuthPayload);
+
+            // Include other payloads
+            urlConnection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            urlConnection.addRequestProperty("userid", userId);
+            urlConnection.addRequestProperty("x-api-key", apiKey);
+
+            // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
+            try (var httpRequestWriter = new DataOutputStream(urlConnection.getOutputStream())) {
+                // This call assumes that all it's content is in UTF8 charset. This is possible because
+                // we basically is only using standard ASCII characters and it's same across all platforms.
+                // Plus the API didn't request any charset inputs.
+                httpRequestWriter.write(args.getBytes(StandardCharsets.UTF_8));
+            }
 
             StringBuilder result = new StringBuilder();
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
