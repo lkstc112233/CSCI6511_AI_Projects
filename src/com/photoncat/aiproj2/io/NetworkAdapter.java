@@ -20,36 +20,41 @@ import java.util.Scanner;
  */
 public class NetworkAdapter {
     private final static String SERVER_URL = "http://www.notexponential.com/aip2pgaming/api/index.php";
+    // I'm storing these sensitive data here. It's against some of the security rules, but hey, we are
+    // using http and basic auth, so screw security rules!
+    private final String basicAuthPayload;
+    private final String userId;
+    private final String apiKey;
 
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            System.exit(0xDEADBEEF);
-        }
-        File file = new File(args[0]);
+    public NetworkAdapter(File sensitive) {
         String username = "";
         String password = "";
-        String userId = "";
-        String apiKey = "";
-        try (Scanner scanner = new Scanner(file)){
+        try (Scanner scanner = new Scanner(sensitive)) {
             username = scanner.nextLine();
             password = scanner.nextLine();
             userId = scanner.nextLine();
             apiKey = scanner.nextLine();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(0x3f3f3f3f);
+            // Rethrow the exception.
+            throw new UncheckedIOException(e);
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
             System.err.println("Please check your input file format.\n Format: username, password, userId, api key, each in a separate line, without any leading or following spaces.");
-            System.exit(987654321);
+            throw e;
         }
         String usernameColonPassword = username + ":" + password;
-        String basicAuthPayload = "Basic " + Base64.getEncoder().encodeToString(usernameColonPassword.getBytes());
+        basicAuthPayload = "Basic " + Base64.getEncoder().encodeToString(usernameColonPassword.getBytes());
+    }
 
-        BufferedReader httpResponseReader = null;
+    /**
+     * Send a get request to the api.
+     *
+     * @return the get result.
+     */
+    private String get(String args) {
+        // Connect to the web server endpoint
+        URL serverUrl = null;
         try {
-            // Connect to the web server endpoint
-            URL serverUrl = new URL(SERVER_URL + "?type=team&teamId=1102");
+            serverUrl = new URL(SERVER_URL + args);
             HttpURLConnection urlConnection = (HttpURLConnection) serverUrl.openConnection();
 
             // Set HTTP method as GET
@@ -63,24 +68,29 @@ public class NetworkAdapter {
             urlConnection.addRequestProperty("userid", userId);
             urlConnection.addRequestProperty("x-api-key", apiKey);
 
+            StringBuilder result = new StringBuilder();
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
-            httpResponseReader =
-                    new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            String lineRead;
-            while((lineRead = httpResponseReader.readLine()) != null) {
-                System.out.println(lineRead);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (httpResponseReader != null) {
-                try {
-                    httpResponseReader.close();
-                } catch (IOException e) {
-                    // Close quietly
+            try (var httpResponseReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                String lineRead;
+                while ((lineRead = httpResponseReader.readLine()) != null) {
+                    result.append(lineRead);
+                    result.append('\n');
                 }
             }
+            return result.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Rethrow so the program crashes.
+            throw new UncheckedIOException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.exit(0xDEADBEEF);
+        }
+        File file = new File(args[0]);
+        NetworkAdapter adapter = new NetworkAdapter(file);
+        System.out.print(adapter.get("?type=team&teamId=1102"));
     }
 }
