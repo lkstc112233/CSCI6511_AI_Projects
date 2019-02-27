@@ -68,9 +68,8 @@ public class NetworkAdapter {
      */
     private String get(String args) {
         // Connect to the web server endpoint
-        URL serverUrl = null;
         try {
-            serverUrl = new URL(SERVER_URL + args);
+            URL serverUrl = new URL(SERVER_URL + args);
             HttpURLConnection urlConnection = (HttpURLConnection) serverUrl.openConnection();
 
             // Set HTTP method as GET
