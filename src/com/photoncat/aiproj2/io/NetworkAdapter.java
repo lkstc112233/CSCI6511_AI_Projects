@@ -1,7 +1,12 @@
 package com.photoncat.aiproj2.io;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Base64;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
 /**
  * The adapter to the p2p gaming server api.
  * http://www.notexponential.com/aip2pgaming/api/index.php
@@ -41,5 +46,41 @@ public class NetworkAdapter {
         String usernameColonPassword = username + ":" + password;
         String basicAuthPayload = "Basic " + Base64.getEncoder().encodeToString(usernameColonPassword.getBytes());
 
+        BufferedReader httpResponseReader = null;
+        try {
+            // Connect to the web server endpoint
+            URL serverUrl = new URL(SERVER_URL + "?type=team&teamId=1102");
+            HttpURLConnection urlConnection = (HttpURLConnection) serverUrl.openConnection();
+
+            // Set HTTP method as GET
+            urlConnection.setRequestMethod("GET");
+
+            // Include the HTTP Basic Authentication payload
+            urlConnection.addRequestProperty("Authorization", basicAuthPayload);
+
+            // Include other payloads
+            urlConnection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            urlConnection.addRequestProperty("userid", Integer.toString(userId));
+            urlConnection.addRequestProperty("x-api-key", apiKey);
+
+            // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
+            httpResponseReader =
+                    new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String lineRead;
+            while((lineRead = httpResponseReader.readLine()) != null) {
+                System.out.println(lineRead);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (httpResponseReader != null) {
+                try {
+                    httpResponseReader.close();
+                } catch (IOException e) {
+                    // Close quietly
+                }
+            }
+        }
     }
 }
