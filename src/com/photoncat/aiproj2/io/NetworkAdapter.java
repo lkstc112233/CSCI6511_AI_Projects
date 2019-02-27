@@ -3,9 +3,7 @@ package com.photoncat.aiproj2.io;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * The adapter to the p2p gaming server api.
@@ -43,6 +41,24 @@ public class NetworkAdapter {
         }
         String usernameColonPassword = username + ":" + password;
         basicAuthPayload = "Basic " + Base64.getEncoder().encodeToString(usernameColonPassword.getBytes());
+    }
+
+    /**
+     * A wrapper for the other get. It parses the args into the string format.
+     *
+     * There's NO protection. Do not pass attacking strings into this function.
+     */
+    private String get(Map<String, String> args) {
+        StringBuilder params = new StringBuilder();
+        char leadingChar = '?';
+        for (var key: args.keySet()) {
+            params.append(leadingChar);
+            params.append(key);
+            params.append('=');
+            params.append(args.get(key));
+            leadingChar = '&';
+        }
+        return get(params.toString());
     }
 
     /**
@@ -91,6 +107,9 @@ public class NetworkAdapter {
         }
         File file = new File(args[0]);
         NetworkAdapter adapter = new NetworkAdapter(file);
-        System.out.print(adapter.get("?type=team&teamId=1102"));
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "team");
+        params.put("teamId", "1102");
+        System.out.print(adapter.get(params));
     }
 }
