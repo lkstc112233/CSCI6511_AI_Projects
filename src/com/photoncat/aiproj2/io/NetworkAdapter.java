@@ -51,7 +51,7 @@ public class NetworkAdapter {
     private String get(Map<String, String> args) {
         StringBuilder params = new StringBuilder();
         char leadingChar = '?';
-        for (var key: args.keySet()) {
+        for (var key : args.keySet()) {
             params.append(leadingChar);
             params.append(key);
             params.append('=');
