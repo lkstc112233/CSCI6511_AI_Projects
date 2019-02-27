@@ -12,4 +12,5 @@ package com.photoncat.aiproj2.io;
  * The API requires an auth whose required information will be loaded from a file therefore won't be check in.
  */
 public class NetworkAdapter {
+    private final static String SERVER_URL = "http://www.notexponential.com/aip2pgaming/api/index.php";
 }
