@@ -13,4 +13,7 @@ package com.photoncat.aiproj2.io;
  */
 public class NetworkAdapter {
     private final static String SERVER_URL = "http://www.notexponential.com/aip2pgaming/api/index.php";
+
+    public static void main(String[] args) {
+    }
 }
