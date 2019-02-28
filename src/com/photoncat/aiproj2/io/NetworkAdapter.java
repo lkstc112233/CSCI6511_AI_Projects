@@ -1,5 +1,7 @@
 package com.photoncat.aiproj2.io;
 
+import com.photoncat.aiproj2.interfaces.Board;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,7 +19,7 @@ import java.util.*;
  *
  * The API requires an auth whose required information will be loaded from a file therefore won't be check in.
  */
-public class NetworkAdapter {
+public class NetworkAdapter implements Adapter {
     private final static String SERVER_URL = "http://www.notexponential.com/aip2pgaming/api/index.php";
     // I'm storing these sensitive data here. It's against some of the security rules, but hey, we are
     // using http and basic auth, so screw security rules!
@@ -177,5 +179,24 @@ public class NetworkAdapter {
         params.put("type", "team");
         params.put("teamId", "1102");
         System.out.print(adapter.get(params));
+
+    @Override
+    public int createGame(int otherTeamId, int boardSize, int target) {
+        return 0;
+    }
+
+    @Override
+    public void moveAt(int gameId, int x, int y) {
+
+    }
+
+    @Override
+    public Board.PieceType getLastMove(int gameId) {
+        return null;
+    }
+
+    @Override
+    public Board getBoard(int gameId) {
+        return null;
     }
 }
