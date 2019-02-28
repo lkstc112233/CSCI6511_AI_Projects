@@ -181,6 +181,7 @@ public class NetworkAdapter implements Adapter {
         params.put("type", "team");
         params.put("teamId", "1102");
         System.out.print(adapter.get(params));
+    }
 
     /**
      * Stores the result of create game.
