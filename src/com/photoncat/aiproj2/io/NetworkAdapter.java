@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.io;
 
+import com.google.gson.Gson;
 import com.photoncat.aiproj2.interfaces.Board;
 
 import java.io.*;
@@ -26,6 +27,7 @@ public class NetworkAdapter implements Adapter {
     private final String basicAuthPayload;
     private final String userId;
     private final String apiKey;
+    private final Gson gson = new Gson();
 
     public NetworkAdapter(File sensitive) {
         String username = "";
@@ -180,9 +182,40 @@ public class NetworkAdapter implements Adapter {
         params.put("teamId", "1102");
         System.out.print(adapter.get(params));
 
+    /**
+     * Stores the result of create game.
+     */
+    private static class CreateGameResult {
+        String code;
+        int gameId;
+    }
+
+
+    /**
+     * Returns the result of Create Game Operation.
+     * @param otherTeamId The method needs only other team's ID, since our teamId is fixed.
+     * @return gameId created.
+     */
     @Override
     public int createGame(int otherTeamId, int boardSize, int target) {
-        return 0;
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "game");
+        params.put("teamId1", "1102");
+        params.put("teamId2", Integer.toString(otherTeamId));
+        params.put("gameType", "TTT");
+        params.put("boardSize", Integer.toString(boardSize));
+        params.put("target", Integer.toString(boardSize));
+        String result = post(params);
+        var parsed = gson.fromJson(result, CreateGameResult.class);
+        if (!parsed.code.equals("OK")) {
+            System.err.println("Create game failed!");
+            System.err.println("with params: ");
+            System.err.println("otherTeamId: " + otherTeamId);
+            System.err.println("boardSize: " + boardSize);
+            System.err.println("target: " + target);
+            return -1;
+        }
+        return parsed.gameId;
     }
 
     @Override
