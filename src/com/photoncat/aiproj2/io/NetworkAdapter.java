@@ -219,9 +219,32 @@ public class NetworkAdapter implements Adapter {
         return parsed.gameId;
     }
 
+    /**
+     * Stores the result of make move.
+     */
+    private static class MoveOperationResult {
+        String code;
+        int moveId;
+    }
+
     @Override
     public void moveAt(int gameId, int x, int y) {
-
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "move");
+        params.put("teamId", "1102");
+        params.put("gameId", Integer.toString(gameId));
+        params.put("move", x + "," + y);
+        String result = post(params);
+        var parsed = gson.fromJson(result, MoveOperationResult.class);
+        if (!parsed.code.equals("OK")) {
+            System.err.println("Move failed!");
+            System.err.println("with params: ");
+            System.err.println("gameId: " + gameId);
+            System.err.println("x: " + x);
+            System.err.println("y: " + y);
+            // Continue execution.
+        }
+        // Discard the move id since we hardly need it.
     }
 
     @Override
