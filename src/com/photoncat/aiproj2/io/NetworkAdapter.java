@@ -171,18 +171,6 @@ public class NetworkAdapter implements Adapter {
         }
     }
 
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            System.exit(0xDEADBEEF);
-        }
-        File file = new File(args[0]);
-        NetworkAdapter adapter = new NetworkAdapter(file);
-        Map<String, String> params = new HashMap<>();
-        params.put("type", "team");
-        params.put("teamId", "1102");
-        System.out.print(adapter.get(params));
-    }
-
     /**
      * Stores the result of create game.
      */
