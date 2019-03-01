@@ -2,8 +2,8 @@ package com.photoncat.aiproj2.io;
 
 import com.photoncat.aiproj2.game.SimpleBoard;
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.MutableBoard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -12,7 +12,7 @@ import java.util.Scanner;
  * This is a console adapter for development.
  */
 public class ConsoleAdapter implements Adapter{
-    private Map<Integer, Board> games = new HashMap<>();
+    private Map<Integer, MutableBoard> games = new HashMap<>();
     private Map<Integer, Boolean> crossPlaying = new HashMap<>();
 
     @Override
