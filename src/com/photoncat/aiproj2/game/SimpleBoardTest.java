@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.game;
 
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.MutableBoard;
 
 public class SimpleBoardTest {
     public static void main(String[] args) {
@@ -14,7 +15,7 @@ public class SimpleBoardTest {
 
     private static void test3x3() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
-        Board simpleBoard = new SimpleBoard(3,3);
+        MutableBoard simpleBoard = new SimpleBoard(3,3);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
         if (!simpleBoard.toString().equals("---\n-O-\n---\n")) throw new AssertionError();
         if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
@@ -42,7 +43,7 @@ public class SimpleBoardTest {
 
     private static void testTakeBack() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
-        Board simpleBoard = new SimpleBoard(3,3);
+        MutableBoard simpleBoard = new SimpleBoard(3,3);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
         if (!simpleBoard.toString().equals("---\n-O-\n---\n")) throw new AssertionError();
         if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
@@ -102,7 +103,7 @@ public class SimpleBoardTest {
 
     private static void testDraw() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
-        Board simpleBoard = new SimpleBoard(3,3);
+        MutableBoard simpleBoard = new SimpleBoard(3,3);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
         if (!simpleBoard.toString().equals("---\n-O-\n---\n")) throw new AssertionError();
         if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
@@ -143,7 +144,7 @@ public class SimpleBoardTest {
 
     private static void testTakeBackFirstDraw() {
         // Test based on a 3x3 board. aka classic tic-tac-toe
-        Board simpleBoard = new SimpleBoard(3,3);
+        MutableBoard simpleBoard = new SimpleBoard(3,3);
         // Nothing happens when take back from zeroth step.
         simpleBoard.takeBack();
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
@@ -202,7 +203,7 @@ public class SimpleBoardTest {
 
     private static void test5x5() {
         // Test based on a 5x5 board.
-        Board simpleBoard = new SimpleBoard(5,4);
+        MutableBoard simpleBoard = new SimpleBoard(5,4);
         if (!simpleBoard.putPiece(1, 1)) throw new AssertionError(); // O
         if (!simpleBoard.toString().equals("-----\n-O---\n-----\n-----\n-----\n")) throw new AssertionError();
         if (simpleBoard.wins() != Board.PieceType.NONE) throw new AssertionError();
