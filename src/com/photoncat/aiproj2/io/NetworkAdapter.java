@@ -275,6 +275,15 @@ public class NetworkAdapter implements Adapter {
         }
     }
 
+    /**
+     * Stores the result of make move.
+     */
+    private static class GetBoardResult {
+        String output;
+        int target;
+        String code;
+    }
+
     @Override
     public Board getBoard(int gameId) {
         return null;
