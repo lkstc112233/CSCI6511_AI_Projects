@@ -286,6 +286,15 @@ public class NetworkAdapter implements Adapter {
 
     @Override
     public Board getBoard(int gameId) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "boardString");
+        params.put("gameId", Integer.toString(gameId));
+        String result = get(params);
+        var parsed = gson.fromJson(result, GetBoardResult.class);
+        if (!parsed.code.equals("OK")) {
+            System.err.println("Get board failed!");
+            return null;
+        }
+        // TODO: Return what in the board.
     }
 }
