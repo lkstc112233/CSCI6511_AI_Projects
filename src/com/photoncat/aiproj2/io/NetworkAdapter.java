@@ -235,9 +235,44 @@ public class NetworkAdapter implements Adapter {
         // Discard the move id since we hardly need it.
     }
 
+    /**
+     * Stores the result of make move.
+     */
+    private static class LastMoveResult {
+        private static class Moves{
+            int moveId;
+            int gameId;
+            int teamId;
+            int moveX;
+            int moveY;
+            String move;
+            String symbol;
+        }
+        String code;
+        Moves[] moves;
+    }
+
+
     @Override
     public Board.PieceType getLastMove(int gameId) {
-        return null;
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "moves");
+        params.put("gameId", Integer.toString(gameId));
+        params.put("count", "5");
+        String result = get(params);
+        var parsed = gson.fromJson(result, LastMoveResult.class);
+        if (!parsed.code.equals("OK")) {
+            System.err.println("Get move failed!");
+            return Board.PieceType.NONE;
+        }
+        if (parsed.moves.length < 1) {
+            return Board.PieceType.NONE;
+        }
+        if (parsed.moves[0].symbol.equalsIgnoreCase("O")) {
+            return Board.PieceType.CIRCLE;
+        } else {
+            return Board.PieceType.CROSS;
+        }
     }
 
     @Override
