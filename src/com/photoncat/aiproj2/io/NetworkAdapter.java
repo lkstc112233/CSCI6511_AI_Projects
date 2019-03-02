@@ -295,6 +295,27 @@ public class NetworkAdapter implements Adapter {
             System.err.println("Get board failed!");
             return null;
         }
-        // TODO: Return what in the board.
+        LoadedBoard board = new LoadedBoard(parsed.output, parsed.target);
+        // Get latest move.
+        Map<String, String> moveParams = new HashMap<>();
+        moveParams.put("type", "moves");
+        moveParams.put("gameId", Integer.toString(gameId));
+        moveParams.put("count", "5");
+        result = get(moveParams);
+        var moveParsed = gson.fromJson(result, LastMoveResult.class);
+        if (!moveParsed.code.equals("OK")) {
+            System.err.println("Get move failed in getBoard!");
+            return null;
+        }
+        if (moveParsed.moves.length >= 1) {
+            var lastMove = Board.PieceType.NONE;
+            if (moveParsed.moves[0].symbol.equalsIgnoreCase("O")) {
+                lastMove = Board.PieceType.CIRCLE;
+            } else {
+                lastMove = Board.PieceType.CROSS;
+            }
+            board.setLastMove(moveParsed.moves[0].moveX, moveParsed.moves[0].moveY, lastMove);
+        }
+        return board;
     }
 }
