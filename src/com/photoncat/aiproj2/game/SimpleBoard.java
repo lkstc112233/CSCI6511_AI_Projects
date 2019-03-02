@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Stack;
 
 public class SimpleBoard implements MutableBoard {
-    private PieceType[][] board;
+    protected PieceType[][] board;
     private int m;
     private int maximumSteps;
-    private int steps = 0;
+    protected int steps = 0;
     private PieceType winner = null;
-    private PieceType next = PieceType.CIRCLE;
+    protected PieceType next = PieceType.CIRCLE;
     // Using two lists to store x and y separately to avoid implementing a class.
     // It's harmful to readability using classes like Map.Entry
     private Stack<Integer> xSteps = new Stack<>();
