@@ -1,11 +1,7 @@
 package com.photoncat.aiproj2.game;
 
-import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 
 public class SimpleBoard implements MutableBoard {
