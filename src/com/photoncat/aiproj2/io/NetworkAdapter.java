@@ -2,6 +2,7 @@ package com.photoncat.aiproj2.io;
 
 import com.google.gson.Gson;
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Move;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -247,6 +248,9 @@ public class NetworkAdapter implements Adapter {
             int moveY;
             String move;
             String symbol;
+            private Move getMove() {
+                return new Move(moveX, moveY);
+            }
         }
         String code;
         Moves[] moves;
@@ -314,7 +318,7 @@ public class NetworkAdapter implements Adapter {
             } else {
                 lastMove = Board.PieceType.CROSS;
             }
-            board.setLastMove(moveParsed.moves[0].moveX, moveParsed.moves[0].moveY, lastMove);
+            board.setLastMove(moveParsed.moves[0].getMove(), lastMove);
         }
         return board;
     }

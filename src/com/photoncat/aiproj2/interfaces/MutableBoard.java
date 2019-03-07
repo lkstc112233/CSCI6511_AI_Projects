@@ -8,10 +8,10 @@ public interface MutableBoard extends Board {
      * Puts a piece at position (x, y).
      * @return true if succeed, false if the cell is already occupied.
      */
-    boolean putPiece(int x, int y);
+    boolean putPiece(Move move);
 
     /**
-     * Takes back one move from {@link MutableBoard#putPiece(int, int)}.
+     * Takes back one move from {@link MutableBoard#putPiece(Move)}.
      */
     void takeBack();
 }
