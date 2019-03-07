@@ -217,20 +217,20 @@ public class NetworkAdapter implements Adapter {
     }
 
     @Override
-    public void moveAt(int gameId, int x, int y) {
+    public void moveAt(int gameId, Move move) {
         Map<String, String> params = new HashMap<>();
         params.put("type", "move");
         params.put("teamId", "1102");
         params.put("gameId", Integer.toString(gameId));
-        params.put("move", x + "," + y);
+        params.put("move", move.getMoveParam());
         String result = post(params);
         var parsed = gson.fromJson(result, MoveOperationResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Move failed!");
             System.err.println("with params: ");
             System.err.println("gameId: " + gameId);
-            System.err.println("x: " + x);
-            System.err.println("y: " + y);
+            System.err.println("x: " + move.x);
+            System.err.println("y: " + move.y);
             // Continue execution.
         }
         // Discard the move id since we hardly need it.
