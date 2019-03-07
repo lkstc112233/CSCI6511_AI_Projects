@@ -2,6 +2,7 @@ package com.photoncat.aiproj2.io;
 
 import com.photoncat.aiproj2.game.SimpleBoard;
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
 import java.util.HashMap;
@@ -23,8 +24,8 @@ public class ConsoleAdapter implements Adapter{
     }
 
     @Override
-    public void moveAt(int gameId, int x, int y) {
-        games.get(gameId).putPiece(x, y);
+    public void moveAt(int gameId, Move move) {
+        games.get(gameId).putPiece(move);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class ConsoleAdapter implements Adapter{
             Scanner scanner = new Scanner(System.in);
             x = scanner.nextInt();
             y = scanner.nextInt();
-            board.putPiece(x, y);
+            board.putPiece(new Move(x, y));
         }
         return board;
     }

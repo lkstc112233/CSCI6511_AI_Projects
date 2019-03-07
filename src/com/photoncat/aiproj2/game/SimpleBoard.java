@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.game;
 
+import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
 import java.util.Stack;
@@ -11,10 +12,7 @@ public class SimpleBoard implements MutableBoard {
     protected int steps = 0;
     private PieceType winner = null;
     protected PieceType next = PieceType.CIRCLE;
-    // Using two lists to store x and y separately to avoid implementing a class.
-    // It's harmful to readability using classes like Map.Entry
-    private Stack<Integer> xSteps = new Stack<>();
-    private Stack<Integer> ySteps = new Stack<>();
+    private Stack<Move> previousSteps = new Stack<>();
     public SimpleBoard(int size, int m) {
         board = new PieceType[size][size];
         for (int i = 0; i < size; ++i) {
@@ -69,7 +67,9 @@ public class SimpleBoard implements MutableBoard {
     };
 
     @Override
-    public boolean putPiece(int x, int y) {
+    public boolean putPiece(Move move) {
+        int x = move.x;
+        int y = move.y;
         if (gameover() ||
                 x < 0 || x >= getSize() || y < 0 || y >= getSize() ||
                 board[x][y] != PieceType.NONE) {
@@ -95,8 +95,7 @@ public class SimpleBoard implements MutableBoard {
             }
         }
         steps += 1;
-        xSteps.add(x);
-        ySteps.add(y);
+        previousSteps.add(move);
         if (steps >= maximumSteps && winner == null) {
             winner = PieceType.NONE;
         }
@@ -111,8 +110,9 @@ public class SimpleBoard implements MutableBoard {
             return;
         }
         toggleNext();
-        int x = xSteps.pop();
-        int y = ySteps.pop();
+        var step = previousSteps.pop();
+        int x = step.x;
+        int y = step.y;
         steps -= 1;
         board[x][y] = PieceType.NONE;
         winner = null;

@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.io;
 
 import com.photoncat.aiproj2.game.SimpleBoard;
+import com.photoncat.aiproj2.interfaces.Move;
 
 /**
  * The loaded board for {@link NetworkAdapter}
@@ -39,10 +40,10 @@ public class LoadedBoard extends SimpleBoard {
         // Leave the rest to the setLastMove method.
     }
 
-    void setLastMove(int x, int y, PieceType type) {
+    void setLastMove(Move move, PieceType type) {
         steps -= 1;
-        board[x][y] = PieceType.NONE;
+        board[move.x][move.y] = PieceType.NONE;
         next = type;
-        putPiece(x, y);
+        putPiece(move);
     }
 }

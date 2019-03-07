@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.game;
 
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.io.Adapter;
 
 import java.util.Random;
@@ -42,8 +43,8 @@ public class Game extends Thread{
                 x = random.nextInt(board.getSize());
                 y = random.nextInt(board.getSize());
             } while (board.getPiece(x, y) != Board.PieceType.NONE);
-            ioAdapter.moveAt(gameId, x, y);
-            while (ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
+            ioAdapter.moveAt(gameId, new Move(x, y));
+            while (!board.gameover() && ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
                 try {
                     Thread.sleep(POLLING_INTERVAL_MILLISECONDS);
