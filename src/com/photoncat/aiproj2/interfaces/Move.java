@@ -11,4 +11,12 @@ public class Move {
         this.x = x;
         this.y = y;
     }
+
+    public String getMoveParam() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(x);
+        sb.append(',');
+        sb.append(y);
+        return sb.toString();
+    }
 }

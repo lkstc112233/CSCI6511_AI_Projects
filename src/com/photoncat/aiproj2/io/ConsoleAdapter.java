@@ -24,8 +24,8 @@ public class ConsoleAdapter implements Adapter{
     }
 
     @Override
-    public void moveAt(int gameId, int x, int y) {
-        games.get(gameId).putPiece(new Move(x, y));
+    public void moveAt(int gameId, Move move) {
+        games.get(gameId).putPiece(move);
     }
 
     @Override
