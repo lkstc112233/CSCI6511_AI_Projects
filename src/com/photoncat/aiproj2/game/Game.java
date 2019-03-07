@@ -43,7 +43,7 @@ public class Game extends Thread{
                 y = random.nextInt(board.getSize());
             } while (board.getPiece(x, y) != Board.PieceType.NONE);
             ioAdapter.moveAt(gameId, x, y);
-            while (ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
+            while (!board.gameover() && ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
                 try {
                     Thread.sleep(POLLING_INTERVAL_MILLISECONDS);
