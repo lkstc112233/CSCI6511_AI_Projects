@@ -2,6 +2,7 @@ package com.photoncat.aiproj2.io;
 
 import com.google.gson.Gson;
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Move;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -216,20 +217,20 @@ public class NetworkAdapter implements Adapter {
     }
 
     @Override
-    public void moveAt(int gameId, int x, int y) {
+    public void moveAt(int gameId, Move move) {
         Map<String, String> params = new HashMap<>();
         params.put("type", "move");
         params.put("teamId", "1102");
         params.put("gameId", Integer.toString(gameId));
-        params.put("move", x + "," + y);
+        params.put("move", move.getMoveParam());
         String result = post(params);
         var parsed = gson.fromJson(result, MoveOperationResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Move failed!");
             System.err.println("with params: ");
             System.err.println("gameId: " + gameId);
-            System.err.println("x: " + x);
-            System.err.println("y: " + y);
+            System.err.println("x: " + move.x);
+            System.err.println("y: " + move.y);
             // Continue execution.
         }
         // Discard the move id since we hardly need it.
@@ -247,6 +248,9 @@ public class NetworkAdapter implements Adapter {
             int moveY;
             String move;
             String symbol;
+            private Move getMove() {
+                return new Move(moveX, moveY);
+            }
         }
         String code;
         Moves[] moves;
@@ -314,7 +318,7 @@ public class NetworkAdapter implements Adapter {
             } else {
                 lastMove = Board.PieceType.CROSS;
             }
-            board.setLastMove(moveParsed.moves[0].moveX, moveParsed.moves[0].moveY, lastMove);
+            board.setLastMove(moveParsed.moves[0].getMove(), lastMove);
         }
         return board;
     }
