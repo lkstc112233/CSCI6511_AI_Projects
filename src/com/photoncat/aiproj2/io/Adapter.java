@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.io;
 
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Move;
 
 /**
  * An interface handling data communication.
@@ -15,9 +16,9 @@ public interface Adapter {
     int createGame(int otherTeamId, int boardSize, int target);
 
     /**
-     * Makes a move at given (x, y).
+     * Makes a move.
      */
-    void moveAt(int gameId, int x, int y);
+    void moveAt(int gameId, Move move);
 
     /**
      * @return who moved last. If no one moved, {@link Board.PieceType#CROSS} will be returned.
