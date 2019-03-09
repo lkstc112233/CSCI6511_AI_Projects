@@ -30,20 +30,25 @@ public class Game extends Thread{
         this.gameId = gameId;
     }
 
+    private Move minMaxSearch(Board board) {
+        // TODO: Decide where to move.
+        // Now it's just a random function.
+        Random random = new Random(0xDEADBEEF);
+        int x = 0;
+        int y = 0;
+        do {
+            x = random.nextInt(board.getSize());
+            y = random.nextInt(board.getSize());
+        } while (board.getPiece(x, y) != Board.PieceType.NONE);
+        return new Move(x, y);
+    }
+
     @Override
     public void run() {
         Board board = ioAdapter.getBoard(gameId);
         while (board != null && !board.gameover()) {
-            // TODO: Decide where to move.
-            // Now it's just a random function.
-            Random random = new Random(0xDEADBEEF);
-            int x = 0;
-            int y = 0;
-            do {
-                x = random.nextInt(board.getSize());
-                y = random.nextInt(board.getSize());
-            } while (board.getPiece(x, y) != Board.PieceType.NONE);
-            ioAdapter.moveAt(gameId, new Move(x, y));
+            var move = minMaxSearch(board);
+            ioAdapter.moveAt(gameId, move);
             while (!board.gameover() && ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
                 try {
