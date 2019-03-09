@@ -7,6 +7,20 @@ import com.photoncat.aiproj2.interfaces.Heuristics;
 public class Heuristic2 implements Heuristics {
     @Override
     public int heuristic(Board board){
+
+        //first check if there is win or draw
+        if(board.gameover()){
+            return 0;
+        }
+        else{
+            if (board.wins()==PieceType.CIRCLE){
+                return 10000000;
+            }
+            else if(board.wins()==PieceType.CROSS){
+                return -10000000;
+            }
+        }
+
         int n=board.getSize();
         int m=board.getM();
 
@@ -22,102 +36,78 @@ public class Heuristic2 implements Heuristics {
         else{
             return NbyM(board);
         }
-//        if ()
-//        return 0;
     }
-
+    //evaluate the board when M>5
     private int NbyM(Board board) {
-        if (checkWin(board,PieceType.CROSS)){
-            return 50000000;
-        }
-        else if (checkWin(board,PieceType.CIRCLE)){
-            return -50000000;
-        }
-        else {
-            int sum=0;
-            int N=board.getSize();
-            for(int i=0;i<N;i++){
-                for (int j=0;j<N;j++){
-                    if (board.getPiece(i,j)==PieceType.NONE){
-                        sum=sum+evaluateNByM(board,i,j,PieceType.CROSS);
-                        sum=sum-evaluateNByM(board,i,j,PieceType.CIRCLE);
-                    }
-
+        int sum=0;
+        int N=board.getSize();
+        for(int i=0;i<N;i++){
+            for (int j=0;j<N;j++){
+                if (board.getPiece(i,j)==PieceType.NONE){
+                    sum=sum+evaluateNByM(board,i,j,PieceType.CIRCLE);
+                    sum=sum-evaluateNByM(board,i,j,PieceType.CROSS);
                 }
             }
-            return sum;
         }
+        return sum;
+
     }
+
+    //evaluate the board when M==5
     private int NByFive(Board board) {
-        if (checkWin(board,PieceType.CROSS)){
-            return 10000000;
-        }
-        else if (checkWin(board,PieceType.CIRCLE)){
-            return -10000000;
-        }
-        else {
-            int sum=0;
-            int N=board.getSize();
-            for(int i=0;i<N;i++){
-                for (int j=0;j<N;j++){
-                    if (board.getPiece(i,j)==PieceType.NONE){
-//                         sum=sum+evaluateNByFive(board,i,j,PieceType.CROSS);
-//                         sum=sum-evaluateNByFive(board,i,j,PieceType.CIRCLE);
-//                         sum=sum+evaluateNByFive2(board,i,j,PieceType.CROSS);
-//                         sum=sum-evaluateNByFive2(board,i,j,PieceType.CIRCLE);
-//                         sum=sum+evaluateNByM(board,i,j,PieceType.CROSS);
-//                         sum=sum-evaluateNByM(board,i,j,PieceType.CIRCLE);
-                        sum=sum+evaluateNByFive3(board,i,j,PieceType.CROSS);
-                        sum=sum-evaluateNByFive3(board,i,j,PieceType.CIRCLE);
-                    }
-
+        int sum=0;
+        int N=board.getSize();
+        for(int i=0;i<N;i++){
+            for (int j=0;j<N;j++){
+                if (board.getPiece(i,j)==PieceType.NONE){
+                    sum=sum+evaluateNByFive(board,i,j,PieceType.CIRCLE);
+                    sum=sum-evaluateNByFive(board,i,j,PieceType.CROSS);
                 }
             }
-            return sum;
         }
+        return sum;
+
     }
+
+    //evaluate the board when M=4
     private int NByFour(Board board) {
-        if (checkWin(board,PieceType.CROSS)){
-            return 50000000;
-        }
-        else if (checkWin(board,PieceType.CIRCLE)){
-            return -50000000;
-        }
-        else {
-            int sum=0;
-            int N=board.getSize();
-            for(int i=0;i<N;i++){
-                for (int j=0;j<N;j++){
-                    if (board.getPiece(i,j)==PieceType.NONE){
-                        sum=sum+evaluateNByFour(board,i,j,PieceType.CROSS);
-                        sum=sum-evaluateNByFour(board,i,j,PieceType.CIRCLE);
-                    }
-
+        int sum=0;
+        int N=board.getSize();
+        for(int i=0;i<N;i++){
+            for (int j=0;j<N;j++){
+                if (board.getPiece(i,j)==PieceType.NONE){
+                    sum=sum+evaluateNByFour(board,i,j,PieceType.CIRCLE);
+                    sum=sum-evaluateNByFour(board,i,j,PieceType.CROSS);
                 }
             }
-            return sum;
         }
+        return sum;
     }
+
 
     private int evaluateNByM(Board board, int row, int col, PieceType player) {
         int M=board.getM();
         int score=0;
         int cur=0;
         int opp=0;
-        if (player==PieceType.CROSS){
+        int numOfTwo=0;         // count for third level
+        boolean computerFlag;  //if current player is our computer
+        if (player==PieceType.CIRCLE){
             cur=1;
             opp=2;
+            computerFlag=true;
         }
         else {
             cur=2;
             opp=1;
+            computerFlag=false;
         }
-        int numOfTwo=0;
+
         for (int i=1;i<=8;i++){
             //top level--------------------------------------
             //01111* or 21111*
             int idx=-1;
-            boolean flagFirst=true;
+            boolean flagFirst=true;    //flag to indicate whether the pattern is valid
             for (;idx>-M;idx--){
                 if (getByDirLen(board,row,col,i,idx)!=cur){
                     flagFirst=false;
@@ -126,32 +116,32 @@ public class Heuristic2 implements Heuristics {
             }
             if (flagFirst){
                 if (getByDirLen(board,row,col,i,idx)==0){
-                    score+=3000000;
+                    score+=3000000;     //01111*
                 }
                 else {
-                    score+=25000;
+                    score+=25000;       //21111*
                 }
-                if (player==PieceType.CROSS){
+                if (computerFlag){
                     score+=500;
                 }
                 continue;
             }
             //111*1 or 11*11 etc
-            boolean tierFlag=true;
-            int loopTime=(M+1)/2-1;
+            boolean tierFlag=true;      //flag to indicate whether we find a valid pattern in this level
+            int loopTime=(M+1)/2-1;     // all the position * can be inserted at
             int leftEnd=-M+1;
             int rightEnd=2;
             for (int l=0;l<loopTime;l++){
                 int left=-1;
                 int right=1;
-                boolean flag=true;
+                boolean flag=true;      //flag to indicate whether the pattern is valid
                 for (;left>leftEnd;left--){
                     if (getByDirLen(board,row,col,i,left)!=cur){
                         flag=false;
                         break;
                     }
                 }
-                if (!flag){
+                if (!flag){             //pattern on the left side does not exist, go to next * position
                     leftEnd++;
                     rightEnd++;
                     continue;
@@ -162,31 +152,33 @@ public class Heuristic2 implements Heuristics {
                         break;
                     }
                 }
-                if (!flag){
+                if (!flag){             //pattern on the right side does not exist, go to next * position
                     leftEnd++;
                     rightEnd++;
                     continue;
                 }
                 score+=24000;
-                if (player==PieceType.CROSS){
+                if (computerFlag){
                     score+=500;
                 }
-                tierFlag=false;
+                tierFlag=false;         //we find a valid pattern
                 break;
             }
 
-            if (!tierFlag){
+            if (!tierFlag){             //we find a valid pattern, go the next direciton on the outerloop
                 continue;
             }
 
             //second level--------------------------------------
             tierFlag=true;
+            //update leftEnd and rightEnd
             leftEnd=-(M-2);
             rightEnd=2;
-            for (int l=0;l<loopTime;l++){
-                // dont need to consider 211*12
+            for (int l=0;l<loopTime;l++){           //loopTime is the same, don't need to consider 211*12
+
+                //when l==0, we only need to consider one side like 2111*
                 if (l==0){
-                    int leftend=-(M-1);
+                    int leftend=-(M-1);             //different leftend used specifically for l==0
                     boolean secondflag=true;
                     for (int j=-1;j>leftend;j--){
                         if (getByDirLen(board,row,col,i,j)!=cur){
@@ -198,15 +190,15 @@ public class Heuristic2 implements Heuristics {
                         if (getByDirLen(board,row,col,i,1)==0){
                             score+=750;
                             if (getByDirLen(board,row,col,i,leftend)==0){
-                                score+=10250;
-                                if (player==PieceType.CROSS){
+                                score+=10250;           //0111*0
+                                if (computerFlag){
                                     score+=500;
                                 }
                             }
                         }
                         else {
                             if (getByDirLen(board,row,col,i,leftend)==0){
-                                score+=500;
+                                score+=500;             //0111*1
                             }
                         }
                         tierFlag=false;
@@ -221,7 +213,7 @@ public class Heuristic2 implements Heuristics {
                             }
                         }
                         if (secondflag){
-                            score+=350;
+                            score+=350;                //1110*
                             tierFlag=false;
                             break;
                         }
@@ -229,7 +221,7 @@ public class Heuristic2 implements Heuristics {
                     continue;
                 }
 
-                //11*1 etc
+                //11*1 etc, when l!=0
                 else{
                     int left=-1;
                     int right=1;
@@ -258,19 +250,19 @@ public class Heuristic2 implements Heuristics {
                     }
                     score+=600;
                     if (getByDirLen(board,row,col,i,leftEnd)==0&&getByDirLen(board,row,col,i,rightEnd)==0){
-                        score+=9600;
-                        if (player==PieceType.CROSS){
+                        score+=9600;                //011*10
+                        if (computerFlag){
                             score+=500;
                         }
                         tierFlag=false;
                         break;
                     }
                     if (getByDirLen(board,row,col,i,leftEnd)!=cur&&getByDirLen(board,row,col,i,rightEnd)!=cur){
-                        tierFlag=false;
+                        tierFlag=false;             //211*12
                         break;
                     }
                     else {
-                        score+=700;
+                        score+=700;                 //211*10 or 011*12
                         tierFlag=false;
                         break;
                     }
@@ -279,20 +271,18 @@ public class Heuristic2 implements Heuristics {
             if (!tierFlag){
                 continue;
             }
+
             //third level-----------------------------------
-            leftEnd=-(M-2);
-            boolean flag=true;
+            leftEnd=-(M-2);     //update the leftEnd
             for (int j=-1;j>leftEnd;j--){
                 if (getByDirLen(board,row,col,i,leftEnd)!=cur){
                     break;
                 }
-//                if (getByDirLen(board,row,col,i,leftEnd)!=opp&&getByDirLen(board,row,col,i,1)!=opp){
-//                    numOfTwo++;
-//                }
                 if (getByDirLen(board,row,col,i,leftEnd)==0){
                     numOfTwo++;
                 }
             }
+
             //fourth level-----------------------------------
             int lonewolf=0;
             for(int k=-(M-1);k<=0;k++){
@@ -302,15 +292,6 @@ public class Heuristic2 implements Heuristics {
                         temp++;
                     }
                     else {
-//                        if (    getByDirLen(board,row,col,i,k+l)==opp||
-//                                getByDirLen(board,row,col,i,k+l)==-1){
-//                            temp=0;
-//                            break;
-//                        }
-//                        if (    getByDirLen(board,row,col,i,k+l)!=cur){
-//                            temp=0;
-//                            break;
-//                        }
                         break;
                     }
                 }
@@ -318,46 +299,46 @@ public class Heuristic2 implements Heuristics {
             }
             score+=lonewolf*15;
         }
+
         if (numOfTwo>=2){
             score+=12000;
-            if (player==PieceType.CROSS){
+            if (computerFlag){
                 score+=200;
             }
         }
 
         return score;
     }
-    private int evaluateNByFive3(Board board, int row, int col, PieceType player) {
+    private int evaluateNByFive(Board board, int row, int col, PieceType player) {
         int score=0;
-        int two=0;
-        int three=0;
+        int two=0;      //used to count two live 2
         int cur=0;
         int opp=0;
-        if (player==PieceType.CROSS){
+        boolean computerFlag;  //if current player is our computer
+        if (player==PieceType.CIRCLE){
             cur=1;
             opp=2;
+            computerFlag=true;
         }
         else {
             cur=2;
             opp=1;
+            computerFlag=false;
         }
-
+        // iterate through eight directions
         for (int i=1;i<=8;i++){
-            //live 4 01111*
+            //live4 01111*
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur&&
                     getByDirLen(board,row,col,i,-4)==cur&&
                     getByDirLen(board,row,col,i,-5)==0){
-                score+=3000000;
-//                       10000000
-//                System.out.println("1111");
-                if (player==PieceType.CROSS){
-                    score+=5000;
-                }
-                continue;
+                        score+=3000000;
+                        if (computerFlag){
+                            score+=5000;
+                        }
+                        continue;
             }
-//            System.out.println("11111");
 
             //dead4 21111*
             if (    getByDirLen(board,row,col,i,-1)==cur&&
@@ -365,75 +346,64 @@ public class Heuristic2 implements Heuristics {
                     getByDirLen(board,row,col,i,-3)==cur&&
                     getByDirLen(board,row,col,i,-4)==cur&&
                     (getByDirLen(board,row,col,i,-5)==opp||getByDirLen(board,row,col,i,-5)==-1)){
-                score+=25000;
-                if (player==PieceType.CROSS){
-                    score+=500;
-                }
-//                score+=10600;
-                continue;
+                        score+=25000;
+                        if (computerFlag){
+                            score+=500;
+                        }
+                         continue;
             }
             //dead4 111*1
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur&&
                     getByDirLen(board,row,col,i,1)==cur){
-                score+=24000;
-//                if ( getByDirLen(board,row,col,i,-4)==0&& getByDirLen(board,row,col,i,2)==0){
-//                    score+=3000000;
-//                }
-//                score+=10600;
-                if (player==PieceType.CROSS){
-                    score+=500;
-                }
-                continue;
+                        score+=24000;
+                        if (computerFlag){
+                            score+=500;
+                        }
+                        continue;
             }
             //dead4 11*11
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,1)==cur&&
                     getByDirLen(board,row,col,i,2)==cur){
-                score+=23000;
-//                if ( getByDirLen(board,row,col,i,-3)==0&& getByDirLen(board,row,col,i,3)==0){
-//                    score+=3000000;
-//                }
-//                score+=10600;
-                if (player==PieceType.CROSS){
-                    score+=500;
-                }
-                continue;
+                    score+=23000;
+                    if (computerFlag){
+                        score+=500;
+                    }
+                    continue;
             }
-//            System.out.println("11111");
 
             //live3 111*0
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur){
 
-                if (getByDirLen(board,row,col,i,1)==0){
-                    score+=750;     //2111*0
-                    if (getByDirLen(board,row,col,i,-4)==0){
-                        score+=10250;  ////0111*0
-//                        three++;
-                        if (player==PieceType.CROSS){
-                            score+=500;
+                        if (getByDirLen(board,row,col,i,1)==0){
+                            score+=750;         //2111*0
+                            if (getByDirLen(board,row,col,i,-4)==0){
+                                score+=10250;   //0111*0
+                                if (computerFlag){
+                                    score+=500;
+                                }
+                            }
                         }
-                    }
-                }
-                if ((   getByDirLen(board,row,col,i,1)==opp||
-                        getByDirLen(board,row,col,i,1)==-1)&&
-                        getByDirLen(board,row,col,i,-4)==0){
-                    score+=500;      //0111*2
-                }
+                        if ((   getByDirLen(board,row,col,i,1)==opp||
+                                getByDirLen(board,row,col,i,1)==-1)&&
+                                getByDirLen(board,row,col,i,-4)==0){
+                                score+=500;      //0111*2
+                        }
 
-                continue;
+                        continue;
             }
             //dead3 1110*
             if (    getByDirLen(board,row,col,i,-1)==0&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur&&
                     getByDirLen(board,row,col,i,-4)==cur){
-                score+=350;
-                continue;
+                        score+=350;
+                        continue;
             }
 
 
@@ -442,42 +412,39 @@ public class Heuristic2 implements Heuristics {
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,1)==cur){
 
-                score+=600;
-                if (getByDirLen(board,row,col,i,-3)==0&&
-                        getByDirLen(board,row,col,i,2)==0){
-                    score+=9600;
-                    if (player==PieceType.CROSS){
-                        score+=500;
-                    }
-                    continue;
-                }
-                if (( getByDirLen(board,row,col,i,-3)==opp||
-                        getByDirLen(board,row,col,i,-3)==-1)&&(
-                        getByDirLen(board,row,col,i,2)==opp||
-                                getByDirLen(board,row,col,i,2)==-1)){
-                    continue;
-                }
-                else {
-                    score+=700;
-                    continue;
-                }
+                        score+=600;
+
+                        //011*10
+                        if (    getByDirLen(board,row,col,i,-3)==0&&
+                                getByDirLen(board,row,col,i,2)==0){
+                                    score+=9600;
+                                    if (computerFlag){
+                                        score+=500;
+                                    }
+                                    continue;
+                        }
+                        //211*12
+                        if ((   getByDirLen(board,row,col,i,-3)==opp|| getByDirLen(board,row,col,i,-3)==-1)&&(
+                                getByDirLen(board,row,col,i,2)==opp || getByDirLen(board,row,col,i,2)==-1)){
+                                    continue;
+                        }
+                        //011*12 or 211*10
+                        else {
+                            score+=700;
+                            continue;
+                        }
 
             }
 
-
+            // two live 2
             if (    getByDirLen(board,row,col,i,-1)==cur&&
-                    getByDirLen(board,row,col,i,-2)==cur
-                    && getByDirLen(board,row,col,i,-3)==0
-                    ){
-                two++;
+                    getByDirLen(board,row,col,i,-2)==cur&&
+                    getByDirLen(board,row,col,i,-3)==0){
+                        two++;
             }
-
-
-
-
-
 
             int lonewolf=0;
+            //check those single ones in each direction
             for(int k=-4;k<=0;k++){
                 int temp=0;
                 for (int l = 0; l <= 4; l++) {
@@ -485,23 +452,17 @@ public class Heuristic2 implements Heuristics {
                         temp++;
                     }
                     else {
-//                        if (    getByDirLen(board,row,col,i,k+l)==opp||
-//                                getByDirLen(board,row,col,i,k+l)==-1)
-//                            temp=0;
                         break;
-//                        if (    getByDirLen(board,row,col,i,k+l)!=cur){
-//                            temp=0;
-//                            break;
-//                        }
                     }
                 }
                 lonewolf+=temp;
             }
             score+=lonewolf*15;
         }
+        // two live 2 is powerful, its score is equivalent to live3
         if (two>=2){
             score+=12000;
-            if (player==PieceType.CROSS){
+            if (computerFlag){
                 score+=200;
             }
         }
@@ -511,61 +472,60 @@ public class Heuristic2 implements Heuristics {
         int score=0;
         int cur=0;
         int opp=0;
-        int one=0;
-        if (player==PieceType.CROSS){
+        int one=0;             //used to count two live 1
+        boolean computerFlag;  //if current player is our computer
+        if (player==PieceType.CIRCLE){
             cur=1;
             opp=2;
+            computerFlag=true;
         }
         else {
             cur=2;
             opp=1;
+            computerFlag=false;
         }
         for (int i=1;i<=8;i++){
-            //live 4 0111*
+            //live 3 0111*
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur&&
                     getByDirLen(board,row,col,i,-4)==0){
-                score+=3000000;
-                if (player==PieceType.CIRCLE){
-                    score+=5000;
-//                    score+=500;
-                }
-                continue;
+                        score+=3000000;
+                        if (computerFlag){
+                            score+=5000;
+                        }
+                        continue;
             }
             //dead 3 2111*
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,-3)==cur&&
                     (getByDirLen(board,row,col,i,-4)==opp||getByDirLen(board,row,col,i,-4)==-1)){
-                score+=25000;
-//                System.out.println("111");
-                if (player==PieceType.CIRCLE){
-//                    System.out.println("111");
-                    score+=500;
-                }
-                continue;
+                        score+=25000;
+                        if (computerFlag){
+                            score+=500;
+                        }
+                        continue;
             }
             //dead 3  11*1
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur&&
                     getByDirLen(board,row,col,i,1)==cur){
-//                score+=240000;
-                score+=25000;
-                if (player==PieceType.CIRCLE){
-                    score+=500;
-                }
-                continue;
+                        score+=25000;
+                        if (computerFlag){
+                            score+=500;
+                        }
+                        continue;
             }
             //live2 11*0
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,-2)==cur){
 
                 if (getByDirLen(board,row,col,i,1)==0){
-                    score+=750;     //2111*0
+                    score+=750;         //211*0
                     if (getByDirLen(board,row,col,i,-3)==0){
-                        score+=39250;  ////0111*0
-                        if (player==PieceType.CIRCLE){
+                        score+=39250;   //011*0
+                        if (computerFlag){
                             score+=50000;
                         }
                     }
@@ -573,40 +533,38 @@ public class Heuristic2 implements Heuristics {
                 if ((   getByDirLen(board,row,col,i,1)==opp||
                         getByDirLen(board,row,col,i,1)==-1)&&
                         getByDirLen(board,row,col,i,-3)==0){
-                    score+=500;      //0111*2
+                            score+=500;      //011*2
                 }
-
                 continue;
             }
             //dead 2 1*1
             if (    getByDirLen(board,row,col,i,-1)==cur&&
                     getByDirLen(board,row,col,i,1)==cur) {
-
-                score += 600;
-                if (getByDirLen(board, row, col, i, -2) == 0 &&
-                        getByDirLen(board, row, col, i, 2) == 0) {
-                    score += 25000;
-                    if (player==PieceType.CIRCLE){
-                        score+=50000;
-                    }
-                    continue;
+                        score += 600;
+                        if (getByDirLen(board, row, col, i, -2) == 0 &&
+                            getByDirLen(board, row, col, i, 2) == 0) {
+                                score += 25000;     //01*10
+                                if (computerFlag){
+                                    score+=50000;
+                                }
+                                continue;
                 }
-                if ((getByDirLen(board, row, col, i, -2) == opp ||
-                        getByDirLen(board, row, col, i, -2) == -1) && (
-                        getByDirLen(board, row, col, i, 2) == opp ||
-                                getByDirLen(board, row, col, i, 2) == -1)) {
-                    continue;
+                if ((   getByDirLen(board, row, col, i, -2) == opp || getByDirLen(board, row, col, i, -2) == -1) && (
+                        getByDirLen(board, row, col, i, 2) == opp || getByDirLen(board, row, col, i, 2) == -1)) {
+                            continue;           //21*12
                 } else {
-                    score += 700;
+                    score += 700;               // 01*12 or 21*10
                     continue;
                 }
             }
-            if (getByDirLen(board, row, col, i, -1) == cur &&
-                    getByDirLen(board, row, col, i, -2) == 0
-                    && getByDirLen(board, row, col, i, 1) == 0
-                    ) {
-                one++;
+
+            //two ones
+            if (    getByDirLen(board, row, col, i, -1) == cur &&
+                    getByDirLen(board, row, col, i, 1) == 0) {
+                        one++;
             }
+
+            //
             int lonewolf=0;
             for(int k=-4;k<=0;k++){
                 int temp=0;
@@ -615,30 +573,27 @@ public class Heuristic2 implements Heuristics {
                         temp++;
                     }
                     else {
-                        if (    getByDirLen(board,row,col,i,k+l)==opp||
-                                getByDirLen(board,row,col,i,k+l)==-1)
-                            temp=0;
                         break;
                     }
                 }
                 lonewolf+=temp;
             }
             score+=lonewolf*15;
-
-
         }
+
         if (one>=2){
             score+=20000;
-            if (player==PieceType.CIRCLE){
+            if (computerFlag){
                 score+=500;
             }
         }
         return score;
     }
 
+    //get the piece by the direction and length to current piece
     private int getByDirLen(Board board, int row, int col, int dir, int len) {
         //len typically is negative.
-        //up
+        //North
         if (dir==1){
             row+=len;
         }
@@ -647,7 +602,7 @@ public class Heuristic2 implements Heuristics {
             row+=len;
             col+=len;
         }
-        //left
+        //West
         else if (dir==3){
             col+=len;
         }
@@ -656,7 +611,7 @@ public class Heuristic2 implements Heuristics {
             row-=len;
             col+=len;
         }
-        //down
+        //South
         else if (dir==5){
             row-=len;
         }
@@ -665,7 +620,7 @@ public class Heuristic2 implements Heuristics {
             row-=len;
             col-=len;
         }
-        //right
+        //East
         else if (dir==7){
             col-=len;
         }
@@ -675,167 +630,22 @@ public class Heuristic2 implements Heuristics {
             col-=len;
         }
         int N=board.getSize();
+        //Return -1 if outta bounds
         if (row<0||col<0||row>=N||col>=N){
             return -1;
         }
-        if (board.getPiece(row,col)==PieceType.CROSS){
-            return 1;
+        if (board.getPiece(row,col)==PieceType.CIRCLE){
+            return 1;       //Circle as our computer is indicated as 1
         }
-        else if (board.getPiece(row,col)==PieceType.CIRCLE){
-            return 2;
+        else if (board.getPiece(row,col)==PieceType.CROSS){
+            return 2;       //Cross as our opponent is indicated as 2
         }
         else {
-            return 0;
+            return 0;       //Empty Cell
         }
     }
-    private boolean checkWin(Board board,PieceType player) {
-        int N=board.getSize();
-        int M=board.getM();
-        int[] dia=new int[2*N-1];
-        int ind=0;
-        for (int i=1;i<=N;i++){
-            dia[ind]=i;
-            ind++;
-        }
-        for (int i=N-1;i>=1;i--){
-            dia[ind]=i;
-            ind++;
-        }
-        // computer's pieceType
-        PieceType cur=player;
-        //horizontal
-        for(int i=0;i<N;i++){
-            int acu=0;
-            int j=0;
-            while(j<N){
-                if (board.getPiece(i,j)==cur){
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                j++;
-            }
-        }
-        //vertical
-        for(int j=0;j<N;j++){
-            int acu=0;
-            int i=0;
-            while(i<N){
-                if (board.getPiece(i,j)==cur){
 
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                i++;
-            }
-        }
-        //counter diagonal
-        int t=0;
-        for (int start=N-1;start>=0;start--){
-            int acu=0;
-            int i=start;
-            int j=0;
-            int len=dia[t];
-            int time=0;
-            while (time<len){
-                if (board.getPiece(i,j)==cur){
-
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                i++;
-                j++;
-                time++;
-            }
-            t++;
-        }
-        for (int start=1;start<N;start++){
-            int acu=0;
-            int j=start;
-            int i=0;
-            int len=dia[t];
-            int time=0;
-            while (time<len){
-                if (board.getPiece(i,j)==cur){
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                i++;
-                j++;
-                time++;
-            }
-            t++;
-        }
-
-
-        //diagonal
-        t=0;
-        for (int start=0;start<N;start++){
-            int acu=0;
-            int i=start;
-            int j=0;
-            int len=dia[t];
-            int time=0;
-            while (time<len){
-                if (board.getPiece(i,j)==cur){
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                i--;
-                j++;
-                time++;
-            }
-            t++;
-        }
-        for (int start=1;start<N;start++){
-            int acu=0;
-            int j=start;
-            int i=N-1;
-            int len=dia[t];
-            int time=0;
-            while (time<len){
-                if (board.getPiece(i,j)==cur){
-                    acu++;
-                    if (acu==M){
-                        return true;
-                    }
-                }
-                else{
-                    acu=0;
-                }
-                i--;
-                j++;
-                time++;
-            }
-            t++;
-        }
-        return false;
-    }
-
+    //evaluate the board when N==3 AND M==3
     private int ThreeByThree(Board board) {
         int score = 0;
         // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
@@ -853,47 +663,49 @@ public class Heuristic2 implements Heuristics {
         int score = 0;
 
         // First cell
+        PieceType cur=PieceType.CIRCLE;
+        PieceType opp=PieceType.CROSS;
 
-        if (board.getPiece(row1,col1) == PieceType.CROSS) {
+        if (board.getPiece(row1,col1) == cur) {
             score = 1;
-        } else if (board.getPiece(row1,col1) == PieceType.CIRCLE) {
+        } else if (board.getPiece(row1,col1) == opp) {
             score = -1;
         }
 
         // Second cell
-        if (board.getPiece(row2,col2) == PieceType.CROSS) {
-            if (score == 1) {   // cell1 is 1
+        if (board.getPiece(row2,col2) == cur) {
+            if (score == 1) {           // cell1 is 1
                 score = 10;
-            } else if (score == -1) {  // cell1 is 2
+            } else if (score == -1) {   // cell1 is 2
                 return 0;
-            } else {  // cell1 is empty
+            } else {                    // cell1 is empty
                 score = 1;
             }
-        } else if (board.getPiece(row2,col2) == PieceType.CIRCLE) {
-            if (score == -1) { // cell1 is 2
+        } else if (board.getPiece(row2,col2) == opp) {
+            if (score == -1) {          // cell1 is 2
                 score = -10;
-            } else if (score == 1) { // cell1 is 1
+            } else if (score == 1) {    // cell1 is 1
                 return 0;
-            } else {  // cell1 is empty
+            } else {                    // cell1 is empty
                 score = -1;
             }
         }
 
         // Third cell
-        if (board.getPiece(row3,col3) == PieceType.CROSS) {
-            if (score > 0) {  // cell1 and/or cell2 is 1
+        if (board.getPiece(row3,col3) == cur) {
+            if (score > 0) {            // cell1 and/or cell2 is 1
                 score *= 10;
-            } else if (score < 0) {  // cell1 and/or cell2 is 2
+            } else if (score < 0) {     // cell1 and/or cell2 is 2
                 return 0;
-            } else {  // cell1 and cell2 are empty
+            } else {                    // cell1 and cell2 are empty
                 score = 1;
             }
-        } else if (board.getPiece(row3,col3) == PieceType.CIRCLE) {
-            if (score < 0) {  // cell1 and/or cell2 is 2
+        } else if (board.getPiece(row3,col3) == opp) {
+            if (score < 0) {            // cell1 and/or cell2 is 2
                 score *= 10;
-            } else if (score > 1) {  // cell1 and/or cell2 is 1
+            } else if (score > 1) {     // cell1 and/or cell2 is 1
                 return 0;
-            } else {  // cell1 and cell2 are empty
+            } else {                    // cell1 and cell2 are empty
                 score = -1;
             }
         }
