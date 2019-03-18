@@ -16,7 +16,7 @@ public class LoadedBoard extends SimpleBoard {
      * @param boardString
      * @param m
      */
-    LoadedBoard(String boardString, int m) {
+    public LoadedBoard(String boardString, int m) {
         super(getSizeFromString(boardString), m);
         String[] boardSplit = boardString.split("\\R");
         // fill the board.
