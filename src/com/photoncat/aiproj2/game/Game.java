@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.game;
 
 import com.photoncat.aiproj2.interfaces.Board;
+import com.photoncat.aiproj2.interfaces.Heuristics;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.io.Adapter;
 
@@ -13,20 +14,23 @@ public class Game extends Thread{
     private static final int POLLING_INTERVAL_MILLISECONDS = 5000;
     private Adapter ioAdapter;
     private int gameId;
+    private Heuristics heuristics;
 
     /**
      * Host a game with another team.
      */
-    public Game(Adapter ioAdapter, int otherTeamId, int boardSize, int target) {
+    public Game(Adapter ioAdapter, int otherTeamId, int boardSize, int target, Heuristics heuristics) {
         this.ioAdapter = ioAdapter;
+        this.heuristics = heuristics;
         gameId = ioAdapter.createGame(otherTeamId, boardSize, target);
     }
 
     /**
      * Join another game.
      */
-    public Game(Adapter ioAdapter, int gameId) {
+    public Game(Adapter ioAdapter, int gameId, Heuristics heuristics) {
         this.ioAdapter = ioAdapter;
+        this.heuristics = heuristics;
         this.gameId = gameId;
     }
 
