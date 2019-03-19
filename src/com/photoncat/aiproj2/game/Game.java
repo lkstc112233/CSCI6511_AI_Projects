@@ -44,6 +44,9 @@ public class Game extends Thread{
             for (int y = 0; y < board.getSize(); ++y) {
                 Move move = new Move(x, y);
                 if (board.putPiece(move)) {
+                    if (board.gameover()) { // It can only be our victory.
+                        return move;
+                    }
                     maximumMap.put(move, heuristics.heuristic(board));
                     board.takeBack();
                 }
