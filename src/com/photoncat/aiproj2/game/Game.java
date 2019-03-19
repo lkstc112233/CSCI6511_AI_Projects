@@ -3,6 +3,7 @@ package com.photoncat.aiproj2.game;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Heuristics;
 import com.photoncat.aiproj2.interfaces.Move;
+import com.photoncat.aiproj2.interfaces.MutableBoard;
 import com.photoncat.aiproj2.io.Adapter;
 
 import java.util.Random;
@@ -34,7 +35,7 @@ public class Game extends Thread{
         this.gameId = gameId;
     }
 
-    private Move minMaxSearch(Board board) {
+    private Move minMaxSearch(MutableBoard board) {
         // TODO: Decide where to move.
         // Now it's just a random function.
         Random random = new Random(0xDEADBEEF);
@@ -51,7 +52,7 @@ public class Game extends Thread{
     public void run() {
         Board board = ioAdapter.getBoard(gameId);
         while (board != null && !board.gameover()) {
-            var move = minMaxSearch(board);
+            var move = minMaxSearch(new DraftBoard(board, Board.PieceType.CIRCLE));
             ioAdapter.moveAt(gameId, move);
             while (!board.gameover() && ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
