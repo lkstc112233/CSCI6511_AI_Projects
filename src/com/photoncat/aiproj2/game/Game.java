@@ -6,7 +6,8 @@ import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 import com.photoncat.aiproj2.io.Adapter;
 
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the gaming thread. Each game is handled in a separate thread to support functions of polling.
@@ -37,15 +38,30 @@ public class Game extends Thread{
 
     private Move minMaxSearch(MutableBoard board) {
         // TODO: Decide where to move.
-        // Now it's just a random function.
-        Random random = new Random(0xDEADBEEF);
-        int x = 0;
-        int y = 0;
-        do {
-            x = random.nextInt(board.getSize());
-            y = random.nextInt(board.getSize());
-        } while (board.getPiece(x, y) != Board.PieceType.NONE);
-        return new Move(x, y);
+        // Now it's just a one-step maximum search.
+        Map<Move, Integer> maximumMap = new HashMap<>();
+        for (int x = 0; x < board.getSize(); ++x) {
+            for (int y = 0; y < board.getSize(); ++y) {
+                Move move = new Move(x, y);
+                if (board.putPiece(move)) {
+                    maximumMap.put(move, heuristics.heuristic(board));
+                    board.takeBack();
+                }
+            }
+        }
+        int maximumValue = Integer.MIN_VALUE;
+        Move bestMove = null;
+        for (var pair: maximumMap.entrySet()) {
+            if (maximumValue < pair.getValue()) {
+                maximumValue = pair.getValue();
+                bestMove = pair.getKey();
+            }
+        }
+        if (bestMove == null) {
+            // There's no any valid move.
+            bestMove = new Move(0, 0);
+        }
+        return bestMove;
     }
 
     @Override
