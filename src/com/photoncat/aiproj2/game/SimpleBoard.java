@@ -60,19 +60,17 @@ public class SimpleBoard implements MutableBoard {
     }
 
     private CheckIsSame[] isSames = new CheckIsSame[] {
-            (offset, x, y) -> (x + offset >= 0) && (x + offset < getSize()) && (board[x + offset][y] == next),
-            (offset, x, y) -> (y + offset >= 0) && (y + offset < getSize()) && (board[x][y + offset] == next),
-            (offset, x, y) -> (x + offset >= 0) && (x + offset < getSize()) && (y + offset >= 0) && (y + offset < getSize()) && (board[x + offset][y + offset] == next),
-            (offset, x, y) -> (x - offset >= 0) && (x - offset < getSize()) && (y + offset >= 0) && (y + offset < getSize()) && (board[x - offset][y + offset] == next),
+            (offset, x, y) -> getPiece(x + offset, y) == next,
+            (offset, x, y) -> getPiece(x, y + offset) == next,
+            (offset, x, y) -> getPiece(x + offset, y + offset) == next,
+            (offset, x, y) -> getPiece(x - offset, y + offset) == next,
     };
 
     @Override
     public boolean putPiece(Move move) {
         int x = move.x;
         int y = move.y;
-        if (gameover() ||
-                x < 0 || x >= getSize() || y < 0 || y >= getSize() ||
-                board[x][y] != PieceType.NONE) {
+        if (gameover() || getPiece(x, y) != PieceType.NONE) {
             return false;
         }
         board[x][y] = next;
@@ -105,8 +103,8 @@ public class SimpleBoard implements MutableBoard {
 
     @Override
     public void takeBack() {
-        // Does nothing when take back 0-th step.
-        if (steps <= 0) {
+        // Does nothing when take back un-happened step.
+        if (previousSteps.empty()) {
             return;
         }
         toggleNext();
@@ -125,9 +123,9 @@ public class SimpleBoard implements MutableBoard {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (var line : board) {
-            for (var piece : line) {
-                switch(piece) {
+        for (int x = 0; x < getSize(); ++x) {
+            for (int y = 0; y < getSize(); ++y) {
+                switch(getPiece(x, y)) {
                     case NONE:
                         sb.append('-');
                         break;
