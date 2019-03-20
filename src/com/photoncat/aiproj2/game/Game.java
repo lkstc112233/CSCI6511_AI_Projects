@@ -36,6 +36,33 @@ public class Game extends Thread{
         this.gameId = gameId;
     }
 
+    /**
+     * A class holding min-max tree node.
+     */
+    private class MinMaxNode {
+        MutableBoard board;
+        int minPossibleValue;
+        int maxPossibleValue;
+        MinMaxNode parent;
+        void update(int value, boolean minLayer) {
+            boolean updated = false;
+            if (minLayer) {
+                if (maxPossibleValue > value) {
+                    maxPossibleValue = value;
+                    updated = true;
+                }
+            } else {
+                if (minPossibleValue < value) {
+                    minPossibleValue = value;
+                    updated = true;
+                }
+            }
+            if (updated && parent != null) {
+                parent.update(value, !minLayer);
+            }
+        }
+    }
+
     private Move minMaxSearch(MutableBoard board) {
         // TODO: Decide where to move.
         // Now it's just a one-step maximum search.
