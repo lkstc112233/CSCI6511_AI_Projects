@@ -18,6 +18,7 @@ import java.util.*;
  */
 public class OnetimePriorityQueue<Element> extends PriorityQueue<Map.Entry<Element, Integer>> {
     private final Map<Element, Integer> extracted = new HashMap<>();
+    public static final Comparator compareByMax = Map.Entry.comparingByValue((a, b)->((Integer)b - (Integer)a));
 
     public OnetimePriorityQueue() {
         super(Map.Entry.comparingByValue());
