@@ -10,15 +10,13 @@ public class Heuristic2 implements Heuristics {
 
         //first check if there is win or draw
         if(board.gameover()){
-            return 0;
-        }
-        else{
             if (board.wins()==PieceType.CIRCLE){
-                return 10000000;
+                return Integer.MAX_VALUE;
             }
             else if(board.wins()==PieceType.CROSS){
-                return -10000000;
+                return Integer.MIN_VALUE;
             }
+            return 0;
         }
 
         int n=board.getSize();
