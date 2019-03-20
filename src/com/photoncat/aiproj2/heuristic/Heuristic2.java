@@ -25,6 +25,9 @@ public class Heuristic2 implements Heuristics {
         if (n==3&&m==3){
             return ThreeByThree(board);
         }
+        if(n==3){
+            return NbyThree(board);
+        }
         if (m==5){
             return NByFive(board);
         }
@@ -44,6 +47,22 @@ public class Heuristic2 implements Heuristics {
                 if (board.getPiece(i,j)==PieceType.NONE){
                     sum=sum+evaluateNByM(board,i,j,PieceType.CIRCLE);
                     sum=sum-evaluateNByM(board,i,j,PieceType.CROSS);
+                }
+            }
+        }
+        return sum;
+
+    }
+
+    //evaluate the board when M==3 && N>3
+    private int NbyThree(Board board) {
+        int sum=0;
+        int N=board.getSize();
+        for(int i=0;i<N;i++){
+            for (int j=0;j<N;j++){
+                if (board.getPiece(i,j)==PieceType.NONE){
+                    sum=sum+evaluateNByThree(board,i,j,PieceType.CIRCLE);
+                    sum=sum-evaluateNByThree(board,i,j,PieceType.CROSS);
                 }
             }
         }
@@ -584,6 +603,73 @@ public class Heuristic2 implements Heuristics {
             if (computerFlag){
                 score+=500;
             }
+        }
+        return score;
+    }
+    private int evaluateNByThree(Board board, int row, int col, PieceType player) {
+        int score=0;
+        int cur=0;
+        int opp=0;
+        boolean computerFlag;  //if current player is our computer
+        if (player==PieceType.CIRCLE){
+            cur=1;
+            opp=2;
+            computerFlag=true;
+        }
+        else {
+            cur=2;
+            opp=1;
+            computerFlag=false;
+        }
+        for (int i=1;i<=8;i++){
+            //live 2 011*
+            if (    getByDirLen(board,row,col,i,-1)==cur&&
+                    getByDirLen(board,row,col,i,-2)==cur&&
+                    getByDirLen(board,row,col,i,-3)==0){
+                score+=3000000;
+                if (computerFlag){
+                    score+=5000;
+                }
+                continue;
+            }
+            //dead 2 211*
+            if (    getByDirLen(board,row,col,i,-1)==cur&&
+                    getByDirLen(board,row,col,i,-2)==cur&&
+                    (getByDirLen(board,row,col,i,-3)==opp||getByDirLen(board,row,col,i,-5)==-1)){
+                score+=25000;
+                if (computerFlag){
+                    score+=500;
+                }
+                continue;
+            }
+            //dead 2 1*1
+            if (    getByDirLen(board,row,col,i,-1)==cur&&
+                    getByDirLen(board,row,col,i,1)==cur){
+                score+=24000;
+                if (computerFlag){
+                    score+=500;
+                }
+                continue;
+            }
+            //live 1
+            if (    getByDirLen(board,row,col,i,-1)==cur&&
+                    getByDirLen(board,row,col,i,-2)==0){
+                score+=10250;
+                if (computerFlag){
+                    score+=500;
+                }
+                continue;
+            }
+            //dead 1
+            if (    getByDirLen(board,row,col,i,-1)==cur&&
+                    getByDirLen(board,row,col,i,-2)!=cur){
+                score+=750;
+                if (computerFlag){
+                    score+=500;
+                }
+                continue;
+            }
+
         }
         return score;
     }
