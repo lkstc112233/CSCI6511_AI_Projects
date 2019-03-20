@@ -27,7 +27,7 @@ class DraftBoard extends SimpleBoard {
 
     @Override
     public PieceType getPiece(int x, int y) {
-        var type = board.getPiece(x, y);
+        PieceType type = board.getPiece(x, y);
         if (type != PieceType.NONE) {
             return type;
         }
