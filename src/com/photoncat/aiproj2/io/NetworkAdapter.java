@@ -57,7 +57,7 @@ public class NetworkAdapter implements Adapter {
     private String get(Map<String, String> args) {
         StringBuilder params = new StringBuilder();
         char leadingChar = '?';
-        for (var key : args.keySet()) {
+        for (String key : args.keySet()) {
             params.append(leadingChar);
             params.append(key);
             params.append('=');
@@ -91,7 +91,8 @@ public class NetworkAdapter implements Adapter {
 
             StringBuilder result = new StringBuilder();
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
-            try (var httpResponseReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+            try (BufferedReader httpResponseReader
+                         = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
                 String lineRead;
                 while ((lineRead = httpResponseReader.readLine()) != null) {
                     result.append(lineRead);
@@ -114,7 +115,7 @@ public class NetworkAdapter implements Adapter {
     private String post(Map<String, String> args) {
         StringBuilder params = new StringBuilder();
         String leadingChar = "";
-        for (var key : args.keySet()) {
+        for (String key : args.keySet()) {
             params.append(leadingChar);
             params.append(key);
             params.append('=');
@@ -148,7 +149,7 @@ public class NetworkAdapter implements Adapter {
             urlConnection.addRequestProperty("x-api-key", apiKey);
 
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
-            try (var httpRequestWriter = new DataOutputStream(urlConnection.getOutputStream())) {
+            try (DataOutputStream httpRequestWriter = new DataOutputStream(urlConnection.getOutputStream())) {
                 // This call assumes that all it's content is in UTF8 charset. This is possible because
                 // we basically is only using standard ASCII characters and it's same across all platforms.
                 // Plus the API didn't request any charset inputs.
@@ -157,7 +158,8 @@ public class NetworkAdapter implements Adapter {
 
             StringBuilder result = new StringBuilder();
             // Read response from web server, which will trigger HTTP Basic Authentication request to be sent.
-            try (var httpResponseReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+            try (BufferedReader httpResponseReader
+                         = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
                 String lineRead;
                 while ((lineRead = httpResponseReader.readLine()) != null) {
                     result.append(lineRead);
@@ -196,7 +198,7 @@ public class NetworkAdapter implements Adapter {
         params.put("boardSize", Integer.toString(boardSize));
         params.put("target", Integer.toString(boardSize));
         String result = post(params);
-        var parsed = gson.fromJson(result, CreateGameResult.class);
+        CreateGameResult parsed = gson.fromJson(result, CreateGameResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Create game failed!");
             System.err.println("with params: ");
@@ -224,7 +226,7 @@ public class NetworkAdapter implements Adapter {
         params.put("gameId", Integer.toString(gameId));
         params.put("move", move.getMoveParam());
         String result = post(params);
-        var parsed = gson.fromJson(result, MoveOperationResult.class);
+        MoveOperationResult parsed = gson.fromJson(result, MoveOperationResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Move failed!");
             System.err.println("with params: ");
@@ -264,7 +266,7 @@ public class NetworkAdapter implements Adapter {
         params.put("gameId", Integer.toString(gameId));
         params.put("count", "5");
         String result = get(params);
-        var parsed = gson.fromJson(result, LastMoveResult.class);
+        LastMoveResult parsed = gson.fromJson(result, LastMoveResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Get move failed!");
             return Board.PieceType.NONE;
@@ -294,7 +296,7 @@ public class NetworkAdapter implements Adapter {
         params.put("type", "boardString");
         params.put("gameId", Integer.toString(gameId));
         String result = get(params);
-        var parsed = gson.fromJson(result, GetBoardResult.class);
+        GetBoardResult parsed = gson.fromJson(result, GetBoardResult.class);
         if (!parsed.code.equals("OK")) {
             System.err.println("Get board failed!");
             return null;
@@ -306,13 +308,13 @@ public class NetworkAdapter implements Adapter {
         moveParams.put("gameId", Integer.toString(gameId));
         moveParams.put("count", "5");
         result = get(moveParams);
-        var moveParsed = gson.fromJson(result, LastMoveResult.class);
+        LastMoveResult moveParsed = gson.fromJson(result, LastMoveResult.class);
         if (!moveParsed.code.equals("OK")) {
             System.err.println("Get move failed in getBoard!");
             return null;
         }
         if (moveParsed.moves.length >= 1) {
-            var lastMove = Board.PieceType.NONE;
+            Board.PieceType lastMove = Board.PieceType.NONE;
             if (moveParsed.moves[0].symbol.equalsIgnoreCase("O")) {
                 lastMove = Board.PieceType.CIRCLE;
             } else {

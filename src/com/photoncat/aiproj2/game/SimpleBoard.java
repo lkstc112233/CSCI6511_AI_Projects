@@ -100,7 +100,7 @@ public class SimpleBoard implements MutableBoard {
         }
         board[x][y] = next;
         // Check win condition.
-        for (var checker : isSames) {
+        for (CheckIsSame checker : isSames) {
             int continuous = 0;
             int offset = 0;
             while (checker.check(this, offset, x, y, next)) {
@@ -133,7 +133,7 @@ public class SimpleBoard implements MutableBoard {
             return;
         }
         toggleNext();
-        var step = previousSteps.pop();
+        Move step = previousSteps.pop();
         int x = step.x;
         int y = step.y;
         steps -= 1;

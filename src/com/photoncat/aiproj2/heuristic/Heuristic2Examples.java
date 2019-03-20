@@ -75,7 +75,7 @@ public class Heuristic2Examples {
                         "----------\n",5);
         boardToAdd.setLastMove(new Move(8, 4), Board.PieceType.CIRCLE);
         boards.add(boardToAdd);
-        for (var board: boards) {
+        for (Board board: boards) {
             System.out.println(board.toString());
             System.out.println("Gameover: " + board.gameover());
             System.out.println("Wins: " + board.wins());

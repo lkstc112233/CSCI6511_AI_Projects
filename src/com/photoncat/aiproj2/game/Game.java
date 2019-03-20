@@ -126,7 +126,7 @@ public class Game extends Thread{
         }
         int maximumValue = Integer.MIN_VALUE;
         Move bestMove = null;
-        for (var node: firstLayer) {
+        for (MinMaxNode node: firstLayer) {
             if (maximumValue < node.minPossibleValue) {
                 maximumValue = node.minPossibleValue;
                 bestMove = node.move;
@@ -143,7 +143,7 @@ public class Game extends Thread{
     public void run() {
         Board board = ioAdapter.getBoard(gameId);
         while (board != null && !board.gameover()) {
-            var move = minMaxSearch(new DraftBoard(board, Board.PieceType.CIRCLE));
+            Move move = minMaxSearch(new DraftBoard(board, Board.PieceType.CIRCLE));
             ioAdapter.moveAt(gameId, move);
             while (!board.gameover() && ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
                 // Wait for 5 seconds - As Professor Arora suggested in slack.
