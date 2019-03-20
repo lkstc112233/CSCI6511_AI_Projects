@@ -16,6 +16,12 @@ public interface Adapter {
     int createGame(int otherTeamId, int boardSize, int target);
 
     /**
+     * Joins a game.
+     * @param gameId The gameId.
+     */
+    void joinGame(int gameId);
+
+    /**
      * Makes a move.
      */
     void moveAt(int gameId, Move move);
