@@ -89,6 +89,7 @@ public class Game extends Thread{
         List<MinMaxNode> firstLayer = new ArrayList<>();
         OnetimePriorityQueue<MinMaxNode> maxLayerNodes = new OnetimePriorityQueue<>(OnetimePriorityQueue.compareByMax);
         OnetimePriorityQueue<MinMaxNode> minLayerNodes = new OnetimePriorityQueue<>();
+        final int MAXIMUM_NODES_EXPANDED = 3000;
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
                 Move move = new Move(x, y);
@@ -104,6 +105,23 @@ public class Game extends Thread{
                     maxLayerNodes.add(node, node.minPossibleValue);
                     board.takeBack();
                 }
+            }
+        }
+        // Expand nodes
+        int expandedCount = 0;
+        while (expandedCount < MAXIMUM_NODES_EXPANDED) {
+            if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
+                break;
+            }
+            if (!maxLayerNodes.isEmpty()) {
+                MinMaxNode node = maxLayerNodes.poll().getKey();
+                expandNode(node, minLayerNodes, false);
+                expandedCount += 1;
+            }
+            if (!minLayerNodes.isEmpty()) {
+                MinMaxNode node = minLayerNodes.poll().getKey();
+                expandNode(node, maxLayerNodes, true);
+                expandedCount += 1;
             }
         }
         int maximumValue = Integer.MIN_VALUE;
