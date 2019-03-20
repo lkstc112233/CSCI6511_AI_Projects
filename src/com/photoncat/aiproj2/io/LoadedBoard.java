@@ -16,7 +16,7 @@ public class LoadedBoard extends SimpleBoard {
      * @param boardString
      * @param m
      */
-    LoadedBoard(String boardString, int m) {
+    public LoadedBoard(String boardString, int m) {
         super(getSizeFromString(boardString), m);
         String[] boardSplit = boardString.split("\\R");
         // fill the board.
@@ -40,7 +40,7 @@ public class LoadedBoard extends SimpleBoard {
         // Leave the rest to the setLastMove method.
     }
 
-    void setLastMove(Move move, PieceType type) {
+    public void setLastMove(Move move, PieceType type) {
         steps -= 1;
         board[move.x][move.y] = PieceType.NONE;
         next = type;

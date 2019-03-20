@@ -19,4 +19,17 @@ public class Move {
         sb.append(y);
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(x) ^ Integer.hashCode(-y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Move)) {
+            return false;
+        }
+        return ((Move)o).x == x && ((Move)o).y == y;
+    }
 }

@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.game;
 
+import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
@@ -22,6 +23,30 @@ public class SimpleBoard implements MutableBoard {
         }
         this.m = m;
         this.maximumSteps = size * size;
+    }
+
+    public SimpleBoard(Board boardInput, Move lastMove) {
+        int size = boardInput.getSize();
+        board = new PieceType[size][size];
+        // This is a must since we are inheriting the base class.
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size; ++j) {
+                board[i][j] = boardInput.getPiece(i, j);
+                if (board[i][j] != PieceType.NONE) {
+                    steps += 1;
+                }
+            }
+        }
+        m = boardInput.getM();
+        maximumSteps = boardInput.getSize() * boardInput.getSize();
+        // Redo last move
+        if (lastMove != null) {
+            this.steps -= 1;
+            next = board[lastMove.x][lastMove.y];
+            board[lastMove.x][lastMove.y] = PieceType.NONE;
+            winner = null;
+            putPiece(lastMove);
+        }
     }
 
     @Override
@@ -56,23 +81,21 @@ public class SimpleBoard implements MutableBoard {
     }
 
     private interface CheckIsSame {
-        boolean check(int offset, int x, int y);
+        boolean check(SimpleBoard board, int offset, int x, int y, PieceType next);
     }
 
-    private CheckIsSame[] isSames = new CheckIsSame[] {
-            (offset, x, y) -> (x + offset >= 0) && (x + offset < getSize()) && (board[x + offset][y] == next),
-            (offset, x, y) -> (y + offset >= 0) && (y + offset < getSize()) && (board[x][y + offset] == next),
-            (offset, x, y) -> (x + offset >= 0) && (x + offset < getSize()) && (y + offset >= 0) && (y + offset < getSize()) && (board[x + offset][y + offset] == next),
-            (offset, x, y) -> (x - offset >= 0) && (x - offset < getSize()) && (y + offset >= 0) && (y + offset < getSize()) && (board[x - offset][y + offset] == next),
+    private static CheckIsSame[] isSames = new CheckIsSame[] {
+            (board, offset, x, y, next) -> board.getPiece(x + offset, y) == next,
+            (board, offset, x, y, next) -> board.getPiece(x, y + offset) == next,
+            (board, offset, x, y, next) -> board.getPiece(x + offset, y + offset) == next,
+            (board, offset, x, y, next) -> board.getPiece(x - offset, y + offset) == next,
     };
 
     @Override
     public boolean putPiece(Move move) {
         int x = move.x;
         int y = move.y;
-        if (gameover() ||
-                x < 0 || x >= getSize() || y < 0 || y >= getSize() ||
-                board[x][y] != PieceType.NONE) {
+        if (gameover() || getPiece(x, y) != PieceType.NONE) {
             return false;
         }
         board[x][y] = next;
@@ -80,12 +103,12 @@ public class SimpleBoard implements MutableBoard {
         for (var checker : isSames) {
             int continuous = 0;
             int offset = 0;
-            while (checker.check(offset, x, y)) {
+            while (checker.check(this, offset, x, y, next)) {
                 continuous += 1;
                 offset += 1;
             }
             offset = -1;
-            while (checker.check(offset, x, y)) {
+            while (checker.check(this, offset, x, y, next)) {
                 continuous += 1;
                 offset -= 1;
             }
@@ -105,8 +128,8 @@ public class SimpleBoard implements MutableBoard {
 
     @Override
     public void takeBack() {
-        // Does nothing when take back 0-th step.
-        if (steps <= 0) {
+        // Does nothing when take back un-happened step.
+        if (previousSteps.empty()) {
             return;
         }
         toggleNext();
@@ -125,9 +148,9 @@ public class SimpleBoard implements MutableBoard {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (var line : board) {
-            for (var piece : line) {
-                switch(piece) {
+        for (int x = 0; x < getSize(); ++x) {
+            for (int y = 0; y < getSize(); ++y) {
+                switch(getPiece(x, y)) {
                     case NONE:
                         sb.append('-');
                         break;
