@@ -5,6 +5,7 @@ import com.photoncat.aiproj2.interfaces.Heuristics;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 import com.photoncat.aiproj2.io.Adapter;
+import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,24 @@ public class Game extends Thread{
             }
             if (updated && parent != null) {
                 parent.update(value, !minLayer);
+            }
+        }
+    }
+
+    private void expandNode(MinMaxNode node, OnetimePriorityQueue<MinMaxNode> nextLayer, boolean minLayer) {
+        for (int x = 0; x < node.board.getSize(); ++x) {
+            for (int y = 0; y < node.board.getSize(); ++y) {
+                Move move = new Move(x, y);
+                if (node.board.putPiece(move)) {
+                    MinMaxNode childNode = new MinMaxNode();
+                    childNode.move = move;
+                    childNode.board = new SimpleBoard(node.board, move);
+                    childNode.parent = node;
+                    int score = heuristics.heuristic(node.board);
+                    childNode.update(score, minLayer);
+                    nextLayer.add(childNode, score);
+                    node.board.takeBack();
+                }
             }
         }
     }
