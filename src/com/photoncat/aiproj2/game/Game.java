@@ -40,6 +40,7 @@ public class Game extends Thread{
      * A class holding min-max tree node.
      */
     private class MinMaxNode {
+        Move move = null;
         MutableBoard board = null;
         int minPossibleValue = Integer.MIN_VALUE;
         int maxPossibleValue = Integer.MAX_VALUE;
