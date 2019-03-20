@@ -40,10 +40,10 @@ public class Game extends Thread{
      * A class holding min-max tree node.
      */
     private class MinMaxNode {
-        MutableBoard board;
-        int minPossibleValue;
-        int maxPossibleValue;
-        MinMaxNode parent;
+        MutableBoard board = null;
+        int minPossibleValue = Integer.MIN_VALUE;
+        int maxPossibleValue = Integer.MAX_VALUE;
+        MinMaxNode parent = null;
         void update(int value, boolean minLayer) {
             boolean updated = false;
             if (minLayer) {
