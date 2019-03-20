@@ -35,6 +35,7 @@ public class Game extends Thread{
         this.ioAdapter = ioAdapter;
         this.heuristics = heuristics;
         this.gameId = gameId;
+        ioAdapter.joinGame(gameId);
     }
 
     /**
