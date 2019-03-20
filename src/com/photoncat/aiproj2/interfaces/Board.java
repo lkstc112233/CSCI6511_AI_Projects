@@ -5,9 +5,25 @@ package com.photoncat.aiproj2.interfaces;
  */
 public interface Board {
     enum PieceType {
-        CROSS,
-        CIRCLE,
-        NONE,
+        CROSS{
+            @Override
+            public PieceType flipPiece() {
+                return CIRCLE;
+            }
+        },
+        CIRCLE{
+            @Override
+            public PieceType flipPiece() {
+                return CROSS;
+            }
+        },
+        NONE {
+            @Override
+            public PieceType flipPiece() {
+                return NONE;
+            }
+        },;
+        public abstract PieceType flipPiece();
     }
 
     /**
