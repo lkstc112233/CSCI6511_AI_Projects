@@ -7,8 +7,8 @@ import com.photoncat.aiproj2.interfaces.MutableBoard;
 import com.photoncat.aiproj2.io.Adapter;
 import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the gaming thread. Each game is handled in a separate thread to support functions of polling.
@@ -86,7 +86,9 @@ public class Game extends Thread{
     private Move minMaxSearch(MutableBoard board) {
         // TODO: Decide where to move.
         // Now it's just a one-step maximum search.
-        Map<Move, Integer> maximumMap = new HashMap<>();
+        List<MinMaxNode> firstLayer = new ArrayList<>();
+        OnetimePriorityQueue<MinMaxNode> maxLayerNodes = new OnetimePriorityQueue<>(OnetimePriorityQueue.compareByMax);
+        OnetimePriorityQueue<MinMaxNode> minLayerNodes = new OnetimePriorityQueue<>();
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
                 Move move = new Move(x, y);
@@ -94,17 +96,22 @@ public class Game extends Thread{
                     if (board.gameover()) { // It can only be our victory, or draw if that's the only move.
                         return move;
                     }
-                    maximumMap.put(move, heuristics.heuristic(board));
+                    MinMaxNode node = new MinMaxNode();
+                    node.move = move;
+                    node.board = new SimpleBoard(board, move);
+                    node.minPossibleValue = heuristics.heuristic(board);
+                    firstLayer.add(node);
+                    maxLayerNodes.add(node, node.minPossibleValue);
                     board.takeBack();
                 }
             }
         }
         int maximumValue = Integer.MIN_VALUE;
         Move bestMove = null;
-        for (var pair: maximumMap.entrySet()) {
-            if (maximumValue < pair.getValue()) {
-                maximumValue = pair.getValue();
-                bestMove = pair.getKey();
+        for (var node: firstLayer) {
+            if (maximumValue < node.minPossibleValue) {
+                maximumValue = node.minPossibleValue;
+                bestMove = node.move;
             }
         }
         if (bestMove == null) {
