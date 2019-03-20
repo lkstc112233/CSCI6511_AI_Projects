@@ -28,7 +28,9 @@ public class ConsoleAdapter implements Adapter{
 
     @Override
     public void joinGame(int gameId) {
-        games.put(gameId, new SimpleBoard(12, 6));
+        if (!games.containsKey(gameId)) {
+            games.put(gameId, new SimpleBoard(12, 6));
+        }
         crossPlaying.put(gameId, false);
         needsFlip.put(gameId, true);
     }
