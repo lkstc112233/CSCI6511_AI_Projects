@@ -35,7 +35,7 @@ public class ConsoleAdapter implements Adapter{
 
     @Override
     public Board getBoard(int gameId) {
-        var board = games.get(gameId);
+        MutableBoard board = games.get(gameId);
         if (!crossPlaying.get(gameId)) {
             crossPlaying.put(gameId, true);
         } else {

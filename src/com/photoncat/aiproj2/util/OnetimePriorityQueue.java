@@ -52,7 +52,7 @@ public class OnetimePriorityQueue<Element> extends PriorityQueue<Map.Entry<Eleme
 
     @Override
     public Map.Entry<Element, Integer> poll() {
-        var elem = peek();
+        Map.Entry<Element, Integer> elem = peek();
         extracted.put(elem.getKey(), elem.getValue());
         super.poll();
         return elem;
