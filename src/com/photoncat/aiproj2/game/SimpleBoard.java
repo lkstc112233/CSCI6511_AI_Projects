@@ -56,14 +56,14 @@ public class SimpleBoard implements MutableBoard {
     }
 
     private interface CheckIsSame {
-        boolean check(int offset, int x, int y);
+        boolean check(SimpleBoard board, int offset, int x, int y, PieceType next);
     }
 
-    private CheckIsSame[] isSames = new CheckIsSame[] {
-            (offset, x, y) -> getPiece(x + offset, y) == next,
-            (offset, x, y) -> getPiece(x, y + offset) == next,
-            (offset, x, y) -> getPiece(x + offset, y + offset) == next,
-            (offset, x, y) -> getPiece(x - offset, y + offset) == next,
+    private static CheckIsSame[] isSames = new CheckIsSame[] {
+            (board, offset, x, y, next) -> board.getPiece(x + offset, y) == next,
+            (board, offset, x, y, next) -> board.getPiece(x, y + offset) == next,
+            (board, offset, x, y, next) -> board.getPiece(x + offset, y + offset) == next,
+            (board, offset, x, y, next) -> board.getPiece(x - offset, y + offset) == next,
     };
 
     @Override
@@ -78,12 +78,12 @@ public class SimpleBoard implements MutableBoard {
         for (var checker : isSames) {
             int continuous = 0;
             int offset = 0;
-            while (checker.check(offset, x, y)) {
+            while (checker.check(this, offset, x, y, next)) {
                 continuous += 1;
                 offset += 1;
             }
             offset = -1;
-            while (checker.check(offset, x, y)) {
+            while (checker.check(this, offset, x, y, next)) {
                 continuous += 1;
                 offset -= 1;
             }
