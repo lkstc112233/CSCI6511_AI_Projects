@@ -3,6 +3,8 @@ package com.photoncat.aiproj2.game;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
 
+import java.util.HashMap;
+
 /**
  * This draft board only takes one step when constructed.
  */
@@ -12,16 +14,22 @@ public class LightDraftBoard implements Board {
     private final PieceType piece;
     private final boolean won;
     private final boolean full;
+    private final PieceType[][] cached;
+    private final int size;
+    private final int m;
 
     public LightDraftBoard(Board base, Move move, PieceType type) {
         board = base;
         this.move = move;
         piece = type;
+        size = board.getSize();
+        cached = new PieceType[size][size];
+        m = board.getM();
         won = WinningChecker.winningCheck(this, move.x, move.y, type);
         boolean full = true;
         escape:
-        for (int i = 0; i < board.getSize(); ++i) {
-            for (int j = 0; j < board.getSize(); ++j) {
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size; ++j) {
                 if (board.getPiece(i, j) == PieceType.NONE) {
                     full = false;
                     break escape;
@@ -33,20 +41,26 @@ public class LightDraftBoard implements Board {
 
     @Override
     public int getSize() {
-        return board.getSize();
+        return size;
     }
 
     @Override
     public int getM() {
-        return board.getM();
+        return m;
     }
 
     @Override
     public PieceType getPiece(int x, int y) {
-        if (move.x == x && move.y == y) {
-            return piece;
+        if (x < 0 || x >= size || y < 0 || y >= size) {
+            return null;
         }
-        return board.getPiece(x, y);
+        if (cached[x][y] != null) {
+            return cached[x][y];
+        }
+        if (move.x == x && move.y == y) {
+            return cached[x][y] = piece;
+        }
+        return cached[x][y] = board.getPiece(x, y);
     }
 
     @Override
