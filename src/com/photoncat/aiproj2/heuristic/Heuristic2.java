@@ -395,114 +395,105 @@ public class Heuristic2 implements Heuristics {
         // iterate through eight directions
         for (Direction d: Direction.values()){
             if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur) {
-                if (d.getByDirLen(board, row, col, -4) == cur) {
-                    //live4 01111*
-                    if (d.getByDirLen(board, row, col, -5) == PieceType.NONE) {
-                        score += 3000000;
-                        if (computerFlag) {
-                            score += 5000;
+                    d.getByDirLen(board,row,col,-2)==cur) {
+                if (
+                        d.getByDirLen(board, row, col, -3) == cur) {
+                    if (d.getByDirLen(board, row, col, -4) == cur) {
+                        //live4 01111*
+                        if (d.getByDirLen(board, row, col, -5) == PieceType.NONE) {
+                            score += 3000000;
+                            if (computerFlag) {
+                                score += 5000;
+                            }
+                            continue;
                         }
-                        continue;
+                        //dead4 21111*
+                        if ((d.getByDirLen(board, row, col, -5) == opp || d.getByDirLen(board, row, col, -5) == null)) {
+                            score += 25000;
+                            if (computerFlag) {
+                                score += 500;
+                            }
+                            continue;
+                        }
                     }
-                    //dead4 21111*
-                    if ((d.getByDirLen(board, row, col, -5) == opp || d.getByDirLen(board, row, col, -5) == null)) {
-                        score += 25000;
+                    //dead4 111*1
+                    if (d.getByDirLen(board, row, col, 1) == cur) {
+                        score += 24000;
                         if (computerFlag) {
                             score += 500;
                         }
                         continue;
                     }
                 }
-                //dead4 111*1
-                if (d.getByDirLen(board, row, col, 1) == cur) {
-                    score += 24000;
+                //dead4 11*11
+                if (d.getByDirLen(board, row, col, 1) == cur &&
+                    d.getByDirLen(board, row, col, 2) == cur) {
+                    score += 23000;
                     if (computerFlag) {
                         score += 500;
                     }
                     continue;
                 }
-            }
-            //dead4 11*11
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,1)==cur&&
-                    d.getByDirLen(board,row,col,2)==cur){
-                    score+=23000;
-                    if (computerFlag){
-                        score+=500;
-                    }
-                    continue;
-            }
 
-            //live3 111*0
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur){
-
-                        if (d.getByDirLen(board,row,col,1)==PieceType.NONE){
-                            score+=750;         //2111*0
-                            if (d.getByDirLen(board,row,col,-4)==PieceType.NONE){
-                                score+=10250;   //0111*0
-                                if (computerFlag){
-                                    score+=500;
-                                }
+                //live3 111*0
+                if (d.getByDirLen(board, row, col, -3) == cur) {
+                    if (d.getByDirLen(board, row, col, 1) == PieceType.NONE) {
+                        score += 750;         //2111*0
+                        if (d.getByDirLen(board, row, col, -4) == PieceType.NONE) {
+                            score += 10250;   //0111*0
+                            if (computerFlag) {
+                                score += 500;
                             }
                         }
-                        if ((   d.getByDirLen(board,row,col,1)==opp||
-                                d.getByDirLen(board,row,col,1)==null)&&
-                                d.getByDirLen(board,row,col,-4)==PieceType.NONE){
-                                score+=500;      //0111*2
-                        }
+                    }
+                    if ((d.getByDirLen(board, row, col, 1) == opp ||
+                            d.getByDirLen(board, row, col, 1) == null) &&
+                            d.getByDirLen(board, row, col, -4) == PieceType.NONE) {
+                        score += 500;      //0111*2
+                    }
+                    continue;
+                }
 
+
+                //dead 3 11*1
+                if (d.getByDirLen(board,row,col,1)==cur){
+                    score+=600;
+                    //011*10
+                    if (d.getByDirLen(board,row,col,-3)==PieceType.NONE&&
+                        d.getByDirLen(board,row,col,2)==PieceType.NONE){
+                        score+=9600;
+                        if (computerFlag){
+                            score+=500;
+                        }
                         continue;
+                    }
+                    //211*12
+                    if ((d.getByDirLen(board,row,col,-3)==opp|| d.getByDirLen(board,row,col,-3)==null)&&(
+                         d.getByDirLen(board,row,col,2)==opp || d.getByDirLen(board,row,col,2)==null)){
+                        continue;
+                    }
+                    //011*12 or 211*10
+                    else {
+                        score+=700;
+                        continue;
+                    }
+                }
+                // two live 2
+                if (d.getByDirLen(board,row,col,-3)==PieceType.NONE){
+                    two++;
+                }
             }
             //dead3 1110*
-            if (    d.getByDirLen(board,row,col,-1)==PieceType.NONE&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur&&
-                    d.getByDirLen(board,row,col,-4)==cur){
+            if (d.getByDirLen(board,row,col,-1)==PieceType.NONE&&
+                d.getByDirLen(board,row,col,-2)==cur&&
+                d.getByDirLen(board,row,col,-3)==cur&&
+                d.getByDirLen(board,row,col,-4)==cur){
                         score+=350;
                         continue;
             }
 
 
-            //dead 3 11*1
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,1)==cur){
 
-                        score+=600;
-
-                        //011*10
-                        if (    d.getByDirLen(board,row,col,-3)==PieceType.NONE&&
-                                d.getByDirLen(board,row,col,2)==PieceType.NONE){
-                                    score+=9600;
-                                    if (computerFlag){
-                                        score+=500;
-                                    }
-                                    continue;
-                        }
-                        //211*12
-                        if ((   d.getByDirLen(board,row,col,-3)==opp|| d.getByDirLen(board,row,col,-3)==null)&&(
-                                d.getByDirLen(board,row,col,2)==opp || d.getByDirLen(board,row,col,2)==null)){
-                                    continue;
-                        }
-                        //011*12 or 211*10
-                        else {
-                            score+=700;
-                            continue;
-                        }
-
-            }
-
-            // two live 2
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==PieceType.NONE){
-                        two++;
-            }
 
             int lonewolf=0;
             //check those single ones in each direction
