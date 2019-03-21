@@ -47,7 +47,7 @@ public class Game extends Thread{
      */
     private class MinMaxNode {
         Move move = null;
-        MutableBoard board = null;
+        Board board = null;
         int minPossibleValue = Integer.MIN_VALUE;
         int maxPossibleValue = Integer.MAX_VALUE;
         MinMaxNode parent = null;
@@ -73,22 +73,25 @@ public class Game extends Thread{
     private void expandNode(MinMaxNode node, OnetimePriorityQueue<MinMaxNode> nextLayer, boolean minLayer) {
         for (int x = 0; x < node.board.getSize(); ++x) {
             for (int y = 0; y < node.board.getSize(); ++y) {
-                Move move = new Move(x, y);
-                if (node.board.putPiece(move)) {
+                if (node.board.getPiece(x, y) == Board.PieceType.NONE) {
+                    Move move = new Move(x, y);
+                    Board newBoard = new LightDraftBoard(
+                            node.board,
+                            move,
+                            minLayer ? Board.PieceType.CROSS : Board.PieceType.CIRCLE);
                     MinMaxNode childNode = new MinMaxNode();
                     childNode.move = move;
-                    childNode.board = new SimpleBoard(node.board, move);
+                    childNode.board = newBoard;
                     childNode.parent = node;
-                    int score = heuristics.heuristic(node.board);
+                    int score = heuristics.heuristic(newBoard);
                     childNode.update(score, minLayer);
                     nextLayer.add(childNode, score);
-                    node.board.takeBack();
                 }
             }
         }
     }
 
-    private Move minMaxSearch(MutableBoard board) {
+    private Move minMaxSearch(Board board) {
         // TODO: Decide where to move.
         // Now it's just a one-step maximum search.
         List<MinMaxNode> firstLayer = new ArrayList<>();
@@ -97,18 +100,18 @@ public class Game extends Thread{
         final int MAXIMUM_NODES_EXPANDED = 3000;
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
-                Move move = new Move(x, y);
-                if (board.putPiece(move)) {
-                    if (board.gameover()) { // It can only be our victory, or draw if that's the only move.
+                if (board.getPiece(x, y) == Board.PieceType.NONE) {
+                    Move move = new Move(x, y);
+                    Board newBoard = new LightDraftBoard(board, move, Board.PieceType.CIRCLE); // It's always our turn.
+                    if (newBoard.gameover()) { // It can only be our victory, or draw if that's the only move.
                         return move;
                     }
                     MinMaxNode node = new MinMaxNode();
                     node.move = move;
-                    node.board = new SimpleBoard(board, move);
-                    node.minPossibleValue = heuristics.heuristic(board);
+                    node.board = newBoard;
+                    node.minPossibleValue = heuristics.heuristic(newBoard);
                     firstLayer.add(node);
                     maxLayerNodes.add(node, node.minPossibleValue);
-                    board.takeBack();
                 }
             }
         }

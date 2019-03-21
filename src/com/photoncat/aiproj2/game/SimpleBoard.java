@@ -25,30 +25,6 @@ public class SimpleBoard implements MutableBoard {
         this.maximumSteps = size * size;
     }
 
-    public SimpleBoard(Board boardInput, Move lastMove) {
-        int size = boardInput.getSize();
-        board = new PieceType[size][size];
-        // This is a must since we are inheriting the base class.
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                board[i][j] = boardInput.getPiece(i, j);
-                if (board[i][j] != PieceType.NONE) {
-                    steps += 1;
-                }
-            }
-        }
-        m = boardInput.getM();
-        maximumSteps = boardInput.getSize() * boardInput.getSize();
-        // Redo last move
-        if (lastMove != null) {
-            this.steps -= 1;
-            next = board[lastMove.x][lastMove.y];
-            board[lastMove.x][lastMove.y] = PieceType.NONE;
-            winner = null;
-            putPiece(lastMove);
-        }
-    }
-
     @Override
     public int getSize() {
         return board.length;
