@@ -92,8 +92,7 @@ public class Game extends Thread{
     }
 
     private Move minMaxSearch(Board board) {
-        // TODO: Decide where to move.
-        // Now it's just a one-step maximum search.
+        // Decide where to move.
         List<MinMaxNode> firstLayer = new ArrayList<>();
         OnetimePriorityQueue<MinMaxNode> maxLayerNodes = new OnetimePriorityQueue<>(OnetimePriorityQueue.compareByMax);
         OnetimePriorityQueue<MinMaxNode> minLayerNodes = new OnetimePriorityQueue<>();
