@@ -58,4 +58,9 @@ public class LightDraftBoard implements Board {
     public boolean gameover() {
         return won || full;
     }
+
+    @Override
+    public String toString() {
+        return Board.toString(this);
+    }
 }
