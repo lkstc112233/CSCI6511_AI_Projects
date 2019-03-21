@@ -9,6 +9,9 @@ import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the gaming thread. Each game is handled in a separate thread to support functions of polling.
@@ -70,22 +73,35 @@ public class Game extends Thread{
         }
     }
 
-    private void expandNode(MinMaxNode node, OnetimePriorityQueue<MinMaxNode> nextLayer, boolean minLayer) {
-        for (int x = 0; x < node.board.getSize(); ++x) {
-            for (int y = 0; y < node.board.getSize(); ++y) {
-                if (node.board.getPiece(x, y) == Board.PieceType.NONE) {
-                    Move move = new Move(x, y);
-                    Board newBoard = new LightDraftBoard(
-                            node.board,
-                            move,
-                            minLayer ? Board.PieceType.CROSS : Board.PieceType.CIRCLE);
-                    MinMaxNode childNode = new MinMaxNode();
-                    childNode.move = move;
-                    childNode.board = newBoard;
-                    childNode.parent = node;
-                    int score = heuristics.heuristic(newBoard);
-                    childNode.update(score, minLayer);
-                    nextLayer.add(childNode, score);
+    private class ExpandTask implements Runnable{
+        private final MinMaxNode node;
+        private final OnetimePriorityQueue<MinMaxNode> nextLayer;
+        private final boolean minLayer;
+        ExpandTask(MinMaxNode node, OnetimePriorityQueue<MinMaxNode> nextLayer, boolean minLayer) {
+            this.node = node;
+            this.nextLayer = nextLayer;
+            this.minLayer = minLayer;
+        }
+        @Override
+        public void run() {
+            for (int x = 0; x < node.board.getSize(); ++x) {
+                for (int y = 0; y < node.board.getSize(); ++y) {
+                    if (node.board.getPiece(x, y) == Board.PieceType.NONE) {
+                        Move move = new Move(x, y);
+                        Board newBoard = new LightDraftBoard(
+                                node.board,
+                                move,
+                                minLayer ? Board.PieceType.CROSS : Board.PieceType.CIRCLE);
+                        MinMaxNode childNode = new MinMaxNode();
+                        childNode.move = move;
+                        childNode.board = newBoard;
+                        childNode.parent = node;
+                        int score = heuristics.heuristic(newBoard);
+                        synchronized (Game.this) {
+                            childNode.update(score, minLayer);
+                            nextLayer.add(childNode, score);
+                        }
+                    }
                 }
             }
         }
@@ -114,22 +130,38 @@ public class Game extends Thread{
                 }
             }
         }
-        // Expand nodes
+        // Expand nodes with a thread pool.
         int expandedCount = 0;
+        final ExecutorService threadPool = Executors.newFixedThreadPool(32);
         while (expandedCount < MAXIMUM_NODES_EXPANDED) {
-            if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
+            if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty() && threadPool.isTerminated()) {
                 break;
             }
-            if (!maxLayerNodes.isEmpty()) {
-                MinMaxNode node = maxLayerNodes.poll().getKey();
-                expandNode(node, minLayerNodes, false);
-                expandedCount += 1;
+            synchronized (this) {
+                if (!maxLayerNodes.isEmpty()) {
+                    MinMaxNode node = maxLayerNodes.poll().getKey();
+                    ExpandTask newTask = new ExpandTask(node, minLayerNodes, false);
+                    threadPool.execute(newTask);
+                    expandedCount += 1;
+                }
             }
-            if (!minLayerNodes.isEmpty()) {
-                MinMaxNode node = minLayerNodes.poll().getKey();
-                expandNode(node, maxLayerNodes, true);
-                expandedCount += 1;
+            synchronized (this) {
+                if (!minLayerNodes.isEmpty()) {
+                    MinMaxNode node = minLayerNodes.poll().getKey();
+                    ExpandTask newTask = new ExpandTask(node, maxLayerNodes, true);
+                    threadPool.execute(newTask);
+                    expandedCount += 1;
+                }
             }
+        }
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(15, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!threadPool.isTerminated()) {
+            threadPool.shutdownNow();
         }
         int maximumValue = Integer.MIN_VALUE;
         Move bestMove = null;
