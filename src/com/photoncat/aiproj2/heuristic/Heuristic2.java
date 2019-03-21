@@ -394,41 +394,35 @@ public class Heuristic2 implements Heuristics {
         }
         // iterate through eight directions
         for (Direction d: Direction.values()){
-            //live4 01111*
             if (    d.getByDirLen(board,row,col,-1)==cur&&
                     d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur&&
-                    d.getByDirLen(board,row,col,-4)==cur&&
-                    d.getByDirLen(board,row,col,-5)==PieceType.NONE){
-                        score+=3000000;
-                        if (computerFlag){
-                            score+=5000;
+                    d.getByDirLen(board,row,col,-3)==cur) {
+                if (d.getByDirLen(board, row, col, -4) == cur) {
+                    //live4 01111*
+                    if (d.getByDirLen(board, row, col, -5) == PieceType.NONE) {
+                        score += 3000000;
+                        if (computerFlag) {
+                            score += 5000;
                         }
                         continue;
-            }
-
-            //dead4 21111*
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur&&
-                    d.getByDirLen(board,row,col,-4)==cur&&
-                    (d.getByDirLen(board,row,col,-5)==opp||d.getByDirLen(board,row,col,-5)==null)){
-                        score+=25000;
-                        if (computerFlag){
-                            score+=500;
-                        }
-                         continue;
-            }
-            //dead4 111*1
-            if (    d.getByDirLen(board,row,col,-1)==cur&&
-                    d.getByDirLen(board,row,col,-2)==cur&&
-                    d.getByDirLen(board,row,col,-3)==cur&&
-                    d.getByDirLen(board,row,col,1)==cur){
-                        score+=24000;
-                        if (computerFlag){
-                            score+=500;
+                    }
+                    //dead4 21111*
+                    if ((d.getByDirLen(board, row, col, -5) == opp || d.getByDirLen(board, row, col, -5) == null)) {
+                        score += 25000;
+                        if (computerFlag) {
+                            score += 500;
                         }
                         continue;
+                    }
+                }
+                //dead4 111*1
+                if (d.getByDirLen(board, row, col, 1) == cur) {
+                    score += 24000;
+                    if (computerFlag) {
+                        score += 500;
+                    }
+                    continue;
+                }
             }
             //dead4 11*11
             if (    d.getByDirLen(board,row,col,-1)==cur&&
