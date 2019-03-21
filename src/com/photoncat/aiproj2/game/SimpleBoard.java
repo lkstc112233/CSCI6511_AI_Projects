@@ -37,7 +37,8 @@ public class SimpleBoard implements MutableBoard {
 
     @Override
     public PieceType getPiece(int x, int y) {
-        if (x < 0 || x >= getSize() || y < 0 || y >= getSize()) {
+        int size = getSize();
+        if (x < 0 || x >= size || y < 0 || y >= size) {
             return null;
         }
         return board[x][y];
