@@ -3,7 +3,6 @@ package com.photoncat.aiproj2.game;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Heuristics;
 import com.photoncat.aiproj2.interfaces.Move;
-import com.photoncat.aiproj2.interfaces.MutableBoard;
 import com.photoncat.aiproj2.io.Adapter;
 import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
