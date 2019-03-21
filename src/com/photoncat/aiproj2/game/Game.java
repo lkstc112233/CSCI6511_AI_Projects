@@ -38,6 +38,10 @@ public class Game extends Thread{
         ioAdapter.joinGame(gameId);
     }
 
+    public int getGameId() {
+        return gameId;
+    }
+
     /**
      * A class holding min-max tree node.
      */
