@@ -122,23 +122,6 @@ public class SimpleBoard implements MutableBoard {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int x = 0; x < getSize(); ++x) {
-            for (int y = 0; y < getSize(); ++y) {
-                switch(getPiece(x, y)) {
-                    case NONE:
-                        sb.append('-');
-                        break;
-                    case CROSS:
-                        sb.append('X');
-                        break;
-                    case CIRCLE:
-                        sb.append('O');
-                        break;
-                }
-            }
-            sb.append('\n');
-        }
-        return sb.toString();
+        return Board.toString(this);
     }
 }
