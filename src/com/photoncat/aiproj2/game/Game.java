@@ -134,8 +134,19 @@ public class Game extends Thread{
         int expandedCount = 0;
         final ExecutorService threadPool = Executors.newFixedThreadPool(32);
         while (expandedCount < MAXIMUM_NODES_EXPANDED) {
-            if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty() && threadPool.isTerminated()) {
-                break;
+            if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
+                if (threadPool.isTerminated()) {
+                    break;
+                }
+                // take a nap and check again.
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
+                    break;
+                }
             }
             synchronized (this) {
                 if (!maxLayerNodes.isEmpty()) {
