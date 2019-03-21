@@ -44,7 +44,7 @@ public class Heuristic2 implements Heuristics {
     }
 
     // Add a cache for redundant calls.
-    private final Map<String, Integer> availableHeuristic = new LRUCache<>(10000);
+    private final Map<String, Integer> availableHeuristic = new LRUCache<>(50000);
 
     @Override
     public int heuristic(Board board){

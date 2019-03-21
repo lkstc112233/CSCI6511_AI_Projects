@@ -112,7 +112,7 @@ public class Game extends Thread{
         List<MinMaxNode> firstLayer = new ArrayList<>();
         OnetimePriorityQueue<MinMaxNode> maxLayerNodes = new OnetimePriorityQueue<>(OnetimePriorityQueue.compareByMax);
         OnetimePriorityQueue<MinMaxNode> minLayerNodes = new OnetimePriorityQueue<>();
-        final int MAXIMUM_NODES_EXPANDED = 3000;
+        final int MAXIMUM_NODES_EXPANDED = 20000;
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
                 if (board.getPiece(x, y) == Board.PieceType.NONE) {
