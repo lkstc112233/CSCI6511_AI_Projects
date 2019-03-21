@@ -80,17 +80,6 @@ public class SimpleBoard implements MutableBoard {
         return winner != null;
     }
 
-    private interface CheckIsSame {
-        boolean check(SimpleBoard board, int offset, int x, int y, PieceType next);
-    }
-
-    private static CheckIsSame[] isSames = new CheckIsSame[] {
-            (board, offset, x, y, next) -> board.getPiece(x + offset, y) == next,
-            (board, offset, x, y, next) -> board.getPiece(x, y + offset) == next,
-            (board, offset, x, y, next) -> board.getPiece(x + offset, y + offset) == next,
-            (board, offset, x, y, next) -> board.getPiece(x - offset, y + offset) == next,
-    };
-
     @Override
     public boolean putPiece(Move move) {
         int x = move.x;
@@ -100,22 +89,8 @@ public class SimpleBoard implements MutableBoard {
         }
         board[x][y] = next;
         // Check win condition.
-        for (CheckIsSame checker : isSames) {
-            int continuous = 0;
-            int offset = 0;
-            while (checker.check(this, offset, x, y, next)) {
-                continuous += 1;
-                offset += 1;
-            }
-            offset = -1;
-            while (checker.check(this, offset, x, y, next)) {
-                continuous += 1;
-                offset -= 1;
-            }
-            if (continuous >= getM()) {
-                winner = next;
-                break;
-            }
+        if (WinningChecker.winningCheck(this, x, y, next)) {
+            winner = next;
         }
         steps += 1;
         previousSteps.add(move);
