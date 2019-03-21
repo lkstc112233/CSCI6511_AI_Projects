@@ -3,6 +3,9 @@ package com.photoncat.aiproj2.heuristic;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Board.PieceType;
 import com.photoncat.aiproj2.interfaces.Heuristics;
+import com.photoncat.aiproj2.util.LRUCache;
+
+import java.util.Map;
 
 public class Heuristic2 implements Heuristics {
     private enum Direction {
@@ -52,10 +55,13 @@ public class Heuristic2 implements Heuristics {
         }
     }
 
+    // Add a cache for redundant calls.
+    private final Map<String, Integer> availableHeuristic = new LRUCache<>(10000);
+
     @Override
     public int heuristic(Board board){
-
         //first check if there is win or draw
+        // no need to cache these result since these results are easily to get.
         if(board.gameover()){
             if (board.wins()==PieceType.CIRCLE){
                 return Integer.MAX_VALUE;
@@ -65,25 +71,34 @@ public class Heuristic2 implements Heuristics {
             }
             return 0;
         }
+        String key = board.toString();
+        synchronized (availableHeuristic) {
+            Integer i = availableHeuristic.get(key);
+            if (i != null) {
+                // Return any already calculated result.
+                return i;
+            }
+        }
+        int result = 0;
 
         int n=board.getSize();
         int m=board.getM();
 
         if (n==3&&m==3){
-            return ThreeByThree(board);
+            result = ThreeByThree(board);
+        } else if(n==3){
+            result = NbyThree(board);
+        } else if (m==5){
+            result = NByFive(board);
+        }else if (m==4){
+            result = NByFour(board);
+        }else {
+            result = NbyM(board);
         }
-        if(n==3){
-            return NbyThree(board);
+        synchronized (availableHeuristic) {
+            availableHeuristic.put(key, result);
         }
-        if (m==5){
-            return NByFive(board);
-        }
-        if (m==4){
-            return NByFour(board);
-        }
-        else{
-            return NbyM(board);
-        }
+        return result;
     }
     //evaluate the board when M>5
     private int NbyM(Board board) {
