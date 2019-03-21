@@ -26,32 +26,28 @@ public class Heuristic2 implements Heuristics {
             this.colFix = colFix;
         }
 
-        public int getRowFix() {
-            return rowFix;
+        public int getRowFix(int len) {
+            return rowFix * len;
         }
 
-        public int getColFix() {
-            return colFix;
+        public int getColFix(int len) {
+            return colFix * len;
         }
 
         //get the piece by the direction and length to current piece
         //len typically is negative.
         private int getByDirLen(Board board, int row, int col, int len) {
-            row += len * getRowFix();
-            col += len * getColFix();
+            row += getRowFix(len);
+            col += getColFix(len);
             PieceType piece = board.getPiece(row, col);
             if (piece == null) {
                 return -1;          //Return -1 if outta bounds
+            } else if (piece == PieceType.CROSS) {
+                return 2;           //Cross as our opponent is indicated as 2
+            } else if (piece == PieceType.CIRCLE) {
+                return 1;           //Circle as our computer is indicated as 1
             }
-            switch (piece) {
-                case CROSS:
-                    return 2;       //Cross as our opponent is indicated as 2
-                case CIRCLE:
-                    return 1;       //Circle as our computer is indicated as 1
-                case NONE:
-                default:
-                    return 0;       //Empty Cell
-            }
+            return 0;
         }
     }
 
