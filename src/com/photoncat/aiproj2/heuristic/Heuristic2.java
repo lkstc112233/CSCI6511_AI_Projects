@@ -6,64 +6,41 @@ import com.photoncat.aiproj2.interfaces.Heuristics;
 
 public class Heuristic2 implements Heuristics {
     private enum Direction {
-        EAST{
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row, col - len);
-            }
-        },
-        NORTH{
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row + len, col);
-            }
-        },
-        NORTH_EAST {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row + len, col - len);
-            }
-        },
-        NORTH_WEST {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row + len, col + len);
-            }
-        },
-        SOUTH {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row - len, col);
-            }
-        },
-        SOUTH_EAST {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row - len, col - len);
-            }
-        },
-        SOUTH_WEST {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row - len, col + len);
-            }
-        },
-        WEST {
-            @Override
-            public int getByDirLen(Board board, int row, int col, int len) {
-                return Direction.getByDirLen(board, row, col + len);
-            }
-        },
+        EAST(0, -1),
+        NORTH(1, 0),
+        NORTH_EAST(1, -1),
+        NORTH_WEST(1, 1),
+        SOUTH(-1, 0),
+        SOUTH_EAST(-1, -1),
+        SOUTH_WEST(-1, 1),
+        WEST(0, 1),
         ;
+        private int rowFix;
+        private int colFix;
+
+        Direction(int rowFix, int colFix) {
+            this.rowFix = rowFix;
+            this.colFix = colFix;
+        }
+
+        public int getRowFix() {
+            return rowFix;
+        }
+
+        public int getColFix() {
+            return colFix;
+        }
+
         //get the piece by the direction and length to current piece
         //len typically is negative.
-        public abstract int getByDirLen(Board board, int row, int col, int len);
-        private static int getByDirLen(Board board, int row, int col) {
+        private int getByDirLen(Board board, int row, int col, int len) {
+            row += len * getRowFix();
+            col += len * getColFix();
             PieceType piece = board.getPiece(row, col);
             if (piece == null) {
                 return -1;          //Return -1 if outta bounds
             }
-            switch(piece) {
+            switch (piece) {
                 case CROSS:
                     return 2;       //Cross as our opponent is indicated as 2
                 case CIRCLE:
