@@ -13,11 +13,7 @@ public class Move {
     }
 
     public String getMoveParam() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(x);
-        sb.append(',');
-        sb.append(y);
-        return sb.toString();
+        return String.valueOf(x) + ',' + y;
     }
 
     @Override
