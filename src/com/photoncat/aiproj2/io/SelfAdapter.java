@@ -31,11 +31,13 @@ public class SelfAdapter implements Adapter {
 
     @Override
     public void moveAt(int gameId, Move move) {
+        System.out.println("Player " + (gameId>0?"Cross":"Circle") + " moving: ");
         if (gameId < 0) {
             gameId = -gameId;
         }
         games.get(gameId).putPiece(move);
         crossPlaying.put(gameId, !crossPlaying.get(gameId));
+        System.out.println(games.get(gameId));
     }
 
     @Override
