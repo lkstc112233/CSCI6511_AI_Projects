@@ -18,7 +18,7 @@ public class Move {
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(x) ^ Integer.hashCode(-y);
+        return (x << 16) | y;
     }
 
     @Override
