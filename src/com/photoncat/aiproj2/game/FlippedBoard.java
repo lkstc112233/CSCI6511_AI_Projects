@@ -34,12 +34,20 @@ public class FlippedBoard implements MutableBoard {
 
     @Override
     public PieceType getPiece(int x, int y) {
-        return board.getPiece(x, y).flipPiece();
+        PieceType piece = board.getPiece(x, y);
+        if (piece != null) {
+            return piece.flipPiece();
+        }
+        return null;
     }
 
     @Override
     public PieceType wins() {
-        return board.wins().flipPiece();
+        PieceType winner = board.wins();
+        if (winner != null) {
+            return winner.flipPiece();
+        }
+        return null;
     }
 
     @Override
