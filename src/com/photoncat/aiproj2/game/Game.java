@@ -146,6 +146,14 @@ public class Game extends Thread{
 
     @Override
     public void run() {
+        while (ioAdapter.getLastMove(gameId) == Board.PieceType.CROSS) {
+            // Wait for 5 seconds - As Professor Arora suggested in slack.
+            try {
+                Thread.sleep(POLLING_INTERVAL_MILLISECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Board board = ioAdapter.getBoard(gameId);
         while (board != null && !board.gameover()) {
             Move move = minMaxSearch(new DraftBoard(board, Board.PieceType.CIRCLE));
