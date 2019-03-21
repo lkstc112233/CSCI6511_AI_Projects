@@ -9,7 +9,7 @@ import com.photoncat.aiproj2.io.SelfAdapter;
 public class MainConsole {
     public static void main(String[] args) {
         Adapter adapter = new SelfAdapter();
-        Game game = new Game(adapter, 0, 10, 5, new Heuristic2());
+        Game game = new Game(adapter, 0, 12, 6, new Heuristic2());
         game.start();
         Game game2 = new Game(adapter, -game.getGameId(), new Heuristic2());
         game2.start();
