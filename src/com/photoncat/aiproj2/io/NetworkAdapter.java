@@ -285,7 +285,7 @@ public class NetworkAdapter implements Adapter {
         if (parsed.moves.length < 1) {
             return Board.PieceType.NONE;
         }
-        if (parsed.moves[0].symbol.equalsIgnoreCase("O")) {
+        if (parsed.moves[0].symbol.equalsIgnoreCase("O") ^ needsFlip.get(gameId)) {
             return Board.PieceType.CIRCLE;
         } else {
             return Board.PieceType.CROSS;

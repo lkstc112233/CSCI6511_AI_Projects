@@ -42,6 +42,9 @@ public class ConsoleAdapter implements Adapter{
 
     @Override
     public Board.PieceType getLastMove(int gameId) {
+        if (needsFlip.get(gameId)) {
+            return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE.flipPiece() : Board.PieceType.CROSS.flipPiece();
+        }
         return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
     }
 
