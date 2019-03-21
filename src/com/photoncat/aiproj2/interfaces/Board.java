@@ -5,9 +5,25 @@ package com.photoncat.aiproj2.interfaces;
  */
 public interface Board {
     enum PieceType {
-        CROSS,
-        CIRCLE,
-        NONE,
+        CROSS{
+            @Override
+            public PieceType flipPiece() {
+                return CIRCLE;
+            }
+        },
+        CIRCLE{
+            @Override
+            public PieceType flipPiece() {
+                return CROSS;
+            }
+        },
+        NONE {
+            @Override
+            public PieceType flipPiece() {
+                return NONE;
+            }
+        },;
+        public abstract PieceType flipPiece();
     }
 
     /**
@@ -35,4 +51,28 @@ public interface Board {
      * @return true if the game is over. Get who wins by calling {@link Board#wins}. If no one wins, the game draws.
      */
     boolean gameover();
+
+    /**
+     * Moved the helper function here.
+     */
+    static String toString(Board board) {
+        StringBuilder sb = new StringBuilder();
+        for (int x = 0; x < board.getSize(); ++x) {
+            for (int y = 0; y < board.getSize(); ++y) {
+                switch(board.getPiece(x, y)) {
+                    case NONE:
+                        sb.append('-');
+                        break;
+                    case CROSS:
+                        sb.append('X');
+                        break;
+                    case CIRCLE:
+                        sb.append('O');
+                        break;
+                }
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
 }

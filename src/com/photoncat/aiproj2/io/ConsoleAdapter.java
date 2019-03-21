@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.io;
 
+import com.photoncat.aiproj2.game.FlippedBoard;
 import com.photoncat.aiproj2.game.SimpleBoard;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
@@ -15,12 +16,23 @@ import java.util.Scanner;
 public class ConsoleAdapter implements Adapter{
     private Map<Integer, MutableBoard> games = new HashMap<>();
     private Map<Integer, Boolean> crossPlaying = new HashMap<>();
+    private Map<Integer, Boolean> needsFlip = new HashMap<>();
 
     @Override
     public int createGame(int otherTeamId, int boardSize, int target) {
         games.put(0, new SimpleBoard(boardSize, target));
         crossPlaying.put(0, false);
+        needsFlip.put(0, false);
         return 0;
+    }
+
+    @Override
+    public void joinGame(int gameId) {
+        if (!games.containsKey(gameId)) {
+            games.put(gameId, new SimpleBoard(12, 6));
+        }
+        crossPlaying.put(gameId, false);
+        needsFlip.put(gameId, true);
     }
 
     @Override
@@ -30,6 +42,9 @@ public class ConsoleAdapter implements Adapter{
 
     @Override
     public Board.PieceType getLastMove(int gameId) {
+        if (needsFlip.get(gameId)) {
+            return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE.flipPiece() : Board.PieceType.CROSS.flipPiece();
+        }
         return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
     }
 
@@ -48,6 +63,9 @@ public class ConsoleAdapter implements Adapter{
             x = scanner.nextInt();
             y = scanner.nextInt();
             board.putPiece(new Move(x, y));
+        }
+        if (needsFlip.get(gameId)) {
+            return new FlippedBoard(board);
         }
         return board;
     }

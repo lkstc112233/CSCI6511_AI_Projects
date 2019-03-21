@@ -4,44 +4,56 @@ import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
-public class SimpleBoard implements MutableBoard {
-    protected PieceType[][] board;
-    private int m;
+/**
+ * A board intended to be used as a draft. Wraps a board.
+ */
+class HashDraftBoard implements MutableBoard {
+    private Board board;
+    private PieceType next;
     private int maximumSteps;
-    protected int steps = 0;
+    private int steps = 0;
+    private Map<Move, PieceType> moves = new HashMap<>();
     private PieceType winner = null;
-    protected PieceType next = PieceType.CIRCLE;
     private Stack<Move> previousSteps = new Stack<>();
-    public SimpleBoard(int size, int m) {
-        board = new PieceType[size][size];
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                board[i][j] = PieceType.NONE;
+
+    public HashDraftBoard(Board board, PieceType nextType) {
+        this.board = board;
+        this.next = nextType;
+        maximumSteps = board.getSize() * board.getSize();
+        for (int x = 0; x < board.getSize(); ++x) {
+            for (int y = 0; y < board.getSize(); ++y) {
+                if (board.getPiece(x, y) != PieceType.NONE) {
+                    steps += 1;
+                }
             }
         }
-        this.m = m;
-        this.maximumSteps = size * size;
     }
 
     @Override
     public int getSize() {
-        return board.length;
+        return board.getSize();
     }
 
     @Override
     public int getM() {
-        return m;
+        return board.getM();
     }
 
     @Override
     public PieceType getPiece(int x, int y) {
-        int size = getSize();
-        if (x < 0 || x >= size || y < 0 || y >= size) {
-            return null;
+        PieceType type = board.getPiece(x, y);
+        if (type != PieceType.NONE) {
+            return type;
         }
-        return board[x][y];
+        Move move = new Move(x, y);
+        if (moves.containsKey(move)) {
+            return moves.get(move);
+        }
+        return PieceType.NONE;
     }
 
     @Override
@@ -59,14 +71,15 @@ public class SimpleBoard implements MutableBoard {
 
     @Override
     public boolean putPiece(Move move) {
-        int x = move.x;
-        int y = move.y;
-        if (gameover() || getPiece(x, y) != PieceType.NONE) {
+        if (board.getPiece(move.x, move.y) != PieceType.NONE) {
             return false;
         }
-        board[x][y] = next;
+        if (moves.containsKey(move)) {
+            return false;
+        }
+        moves.put(move, next);
         // Check win condition.
-        if (WinningChecker.winningCheck(this, x, y, next)) {
+        if (WinningChecker.winningCheck(this, move.x, move.y, next)) {
             winner = next;
         }
         steps += 1;
@@ -86,10 +99,8 @@ public class SimpleBoard implements MutableBoard {
         }
         toggleNext();
         Move step = previousSteps.pop();
-        int x = step.x;
-        int y = step.y;
         steps -= 1;
-        board[x][y] = PieceType.NONE;
+        moves.remove(step);
         winner = null;
     }
 

@@ -18,7 +18,7 @@ class DraftBoard extends SimpleBoard {
         this.next = nextType;
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
-                if (super.getPiece(x, y) != PieceType.NONE) {
+                if (board.getPiece(x, y) != PieceType.NONE) {
                     steps += 1;
                 }
             }

@@ -1,6 +1,7 @@
 package com.photoncat.aiproj2.io;
 
 import com.google.gson.Gson;
+import com.photoncat.aiproj2.game.FlippedBoard;
 import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
 
@@ -29,6 +30,7 @@ public class NetworkAdapter implements Adapter {
     private final String userId;
     private final String apiKey;
     private final Gson gson = new Gson();
+    private final Map<Integer, Boolean> needsFlip = new HashMap<>();
 
     public NetworkAdapter(File sensitive) {
         String username = "";
@@ -207,7 +209,16 @@ public class NetworkAdapter implements Adapter {
             System.err.println("target: " + target);
             return -1;
         }
+        needsFlip.put(parsed.gameId, false);
         return parsed.gameId;
+    }
+
+    /**
+     * Requests a join into an existing game.
+     */
+    @Override
+    public void joinGame(int gameId) {
+        needsFlip.put(gameId, true);
     }
 
     /**
@@ -274,7 +285,7 @@ public class NetworkAdapter implements Adapter {
         if (parsed.moves.length < 1) {
             return Board.PieceType.NONE;
         }
-        if (parsed.moves[0].symbol.equalsIgnoreCase("O")) {
+        if (parsed.moves[0].symbol.equalsIgnoreCase("O") ^ needsFlip.get(gameId)) {
             return Board.PieceType.CIRCLE;
         } else {
             return Board.PieceType.CROSS;
@@ -321,6 +332,9 @@ public class NetworkAdapter implements Adapter {
                 lastMove = Board.PieceType.CROSS;
             }
             board.setLastMove(moveParsed.moves[0].getMove(), lastMove);
+        }
+        if (needsFlip.get(gameId)) {
+            return new FlippedBoard(board);
         }
         return board;
     }
