@@ -96,6 +96,18 @@ public class Game extends Thread{
                         childNode.board = newBoard;
                         childNode.parent = node;
                         int score = heuristics.heuristic(newBoard);
+                        // cut-offs
+                        if (node.parent != null) {
+                            if (minLayer) {
+                                if (score > node.parent.maxPossibleValue) {
+                                    // Beta cut off
+                                    break;
+                                }
+                            } else if (score < node.parent.minPossibleValue) {
+                                // Alpha cut off
+                                break;
+                            }
+                        }
                         synchronized (Game.this) {
                             childNode.update(score, minLayer);
                             nextLayer.add(childNode, score);
