@@ -162,12 +162,12 @@ public class Heuristic2 implements Heuristics {
         if (player==PieceType.CIRCLE){
             cur=PieceType.CIRCLE;
             opp=PieceType.CROSS;
-            computerFlag=true;
+            computerFlag=false;
         }
         else {
             cur=PieceType.CROSS;
             opp=PieceType.CIRCLE;
-            computerFlag=false;
+            computerFlag=true;
         }
 
         for (Direction d: Direction.values()){
@@ -317,7 +317,7 @@ public class Heuristic2 implements Heuristics {
                     score+=600;
                     if (d.getByDirLen(board,row,col,leftEnd)==PieceType.NONE&&
                             d.getByDirLen(board,row,col,rightEnd)==PieceType.NONE){
-                        score+=9600;                //011*10
+                        score+=10200;                //011*10
                         if (computerFlag){
                             score+=500;
                         }
