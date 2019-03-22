@@ -40,41 +40,41 @@ public class ConsoleAdapter implements Adapter{
     @Override
     public void moveAt(int gameId, Move move) {
         game.putPiece(move);
+        crossPlaying = true;
     }
 
     @Override
     public Board.PieceType getLastMove(int gameId) {
-        Board.PieceType result = crossPlaying ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
-        if (needsFlip) {
-            return result.flipPiece();
+        if (crossPlaying) {
+            getConsoleInput();
+            crossPlaying = false;
         }
-        return result;
+        return Board.PieceType.CIRCLE;
     }
 
     @Override
     public Board getBoard(int gameId) {
-        if (!crossPlaying) {
-            crossPlaying = true;
-        } else {
-            // Get console input.
-            System.out.println(game.toString());
-            System.out.println("  -> y");
-            System.out.println("|\nv\nx");
-            int x;
-            int y;
-            int size = game.getSize();
-            Scanner scanner = new Scanner(System.in);
-            do {
-                System.out.println("Input x and y: ");
-                x = scanner.nextInt();
-                y = scanner.nextInt();
-            } while (!game.putPiece(new Move(x, y)));
-            System.out.println(game.toString());
-            System.out.println("+++++++++++++++++++++++++++++++++++");
-        }
         if (needsFlip) {
             return new FlippedBoard(game);
         }
         return game;
+    }
+
+    private void getConsoleInput() {
+        // Get console input.
+        System.out.println(game.toString());
+        System.out.println("  -> y");
+        System.out.println("|\nv\nx");
+        int x;
+        int y;
+        int size = game.getSize();
+        Scanner scanner = new Scanner(System.in);
+        do {
+            System.out.println("Input x and y: ");
+            x = scanner.nextInt();
+            y = scanner.nextInt();
+        } while (!game.putPiece(new Move(x, y)));
+        System.out.println(game.toString());
+        System.out.println("+++++++++++++++++++++++++++++++++++");
     }
 }
