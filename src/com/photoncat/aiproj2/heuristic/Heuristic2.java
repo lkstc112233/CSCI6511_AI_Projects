@@ -340,15 +340,19 @@ public class Heuristic2 implements Heuristics {
             }
 
             //third level-----------------------------------
+            boolean validFlag=true;
             leftEnd=-(M-2);     //update the leftEnd
             for (int j=-1;j>leftEnd;j--){
-                if (d.getByDirLen(board,row,col,leftEnd)!=cur){
+                if (d.getByDirLen(board,row,col,j)!=cur){
+                    validFlag=false;
                     break;
                 }
-                if (d.getByDirLen(board,row,col,leftEnd)==PieceType.NONE){
-                    numOfTwo++;
-                }
             }
+            if (validFlag && d.getByDirLen(board,row,col,leftEnd)==PieceType.NONE){
+                numOfTwo++;
+            }
+
+
 
             //fourth level-----------------------------------
             int lonewolf=0;
