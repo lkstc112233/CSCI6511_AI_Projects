@@ -173,6 +173,14 @@ public class Game extends Thread{
                     }
                 }
             }
+            // Give the workers some time to finish.
+            if (expandedCount % 200 == 0) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         threadPool.shutdown();
         try {
