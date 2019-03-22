@@ -8,8 +8,8 @@ import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -146,22 +146,11 @@ public class Game extends Thread{
         // Expand nodes with a thread pool.
         int expandedCount = 0;
         final int MAX_DEPTH = 8;
-        final ExecutorService threadPool = Executors.newFixedThreadPool(32);
+        final ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(32);
         while (expandedCount < MAXIMUM_NODES_EXPANDED) {
             synchronized (this) {
-                if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
-                    if (threadPool.isTerminated()) {
-                        break;
-                    }
-                    // take a nap and check again.
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty()) {
-                        break;
-                    }
+                if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty() && threadPool.getActiveCount() == 0) {
+                    break;
                 }
             }
             synchronized (this) {
