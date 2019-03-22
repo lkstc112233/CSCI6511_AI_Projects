@@ -11,62 +11,70 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * This is a console adapter for development.
+ * This is a console adapter for development and TA evaluation.
+ *
+ * There's only one game. All ids are ignored.
  */
 public class ConsoleAdapter implements Adapter{
-    private Map<Integer, MutableBoard> games = new HashMap<>();
-    private Map<Integer, Boolean> crossPlaying = new HashMap<>();
-    private Map<Integer, Boolean> needsFlip = new HashMap<>();
+    private MutableBoard game = null;
+    private boolean crossPlaying = false;
+    private boolean needsFlip = false;
 
     @Override
     public int createGame(int otherTeamId, int boardSize, int target) {
-        games.put(0, new SimpleBoard(boardSize, target));
-        crossPlaying.put(0, false);
-        needsFlip.put(0, false);
+        game = new SimpleBoard(boardSize, target);
+        crossPlaying = false;
+        needsFlip = false;
         return 0;
     }
 
     @Override
     public void joinGame(int gameId) {
-        if (!games.containsKey(gameId)) {
-            games.put(gameId, new SimpleBoard(12, 6));
+        if (game == null) {
+            game = new SimpleBoard(12, 6);
         }
-        crossPlaying.put(gameId, false);
-        needsFlip.put(gameId, true);
+        crossPlaying = true;
+        needsFlip = true;
     }
 
     @Override
     public void moveAt(int gameId, Move move) {
-        games.get(gameId).putPiece(move);
+        game.putPiece(move);
     }
 
     @Override
     public Board.PieceType getLastMove(int gameId) {
-        if (needsFlip.get(gameId)) {
-            return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE.flipPiece() : Board.PieceType.CROSS.flipPiece();
+        Board.PieceType result = crossPlaying ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
+        if (needsFlip) {
+            return result.flipPiece();
         }
-        return crossPlaying.get(gameId) ? Board.PieceType.CIRCLE : Board.PieceType.CROSS;
+        return result;
     }
 
     @Override
     public Board getBoard(int gameId) {
-        MutableBoard board = games.get(gameId);
-        if (!crossPlaying.get(gameId)) {
-            crossPlaying.put(gameId, true);
+        if (!crossPlaying) {
+            crossPlaying = true;
         } else {
             // Get console input.
-            System.out.println(board.toString());
-            System.out.println("Input x and y: ");
+            System.out.println(game.toString());
+            System.out.println("  -> y");
+            System.out.println("|\nv\nx");
             int x;
             int y;
+            int size = game.getSize();
             Scanner scanner = new Scanner(System.in);
-            x = scanner.nextInt();
-            y = scanner.nextInt();
-            board.putPiece(new Move(x, y));
+            do {
+                System.out.println("Input x and y: ");
+                x = scanner.nextInt();
+                y = scanner.nextInt();
+            } while (!game.putPiece(new Move(x, y)));
+            System.out.println(game.toString());
+            System.out.println("+++++++++++++++++++++++++++++++++++");
         }
-        if (needsFlip.get(gameId)) {
-            return new FlippedBoard(board);
+        if (needsFlip) {
+            return new FlippedBoard(game);
         }
-        return board;
+        return game;
     }
 }
