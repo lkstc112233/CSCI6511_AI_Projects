@@ -13,49 +13,34 @@ public class Heuristic2Examples {
         Heuristics heuristics = new Heuristic2();
         List<Board> boards = new ArrayList<>();
         LoadedBoard boardToAdd = new LoadedBoard(
-                "------------\n" +
+                        "------------\n" +
                         "-----X------\n" +
-                        "-----O------\n" +
-                        "-----O------\n" +
-                        "-----OX-O---\n" +
+                        "-X---O------\n" +
+                        "--O-OO------\n" +
+                        "---O-OXOO---\n" +
                         "-XOOOOOX----\n" +
-                        "-----OX-X---\n" +
+                        "-----OXXX---\n" +
                         "-----XOXXX--\n" +
-                        "----X---X---\n" +
+                        "----X-XXX---\n" +
                         "--------X--O\n" +
                         "--O-----O---\n" +
                         "------------\n",6);
-        boardToAdd.setLastMove(new Move(10, 8), Board.PieceType.CIRCLE);
+        boardToAdd.setLastMove(new Move(3, 4), Board.PieceType.CIRCLE);
         boards.add(boardToAdd);
         boardToAdd = new LoadedBoard(
-                "------------\n" +
+                        "------------\n" +
                         "-----X------\n" +
-                        "-----O------\n" +
-                        "-----O------\n" +
-                        "---O-OX-O---\n" +
+                        "-X---O------\n" +
+                        "--O--O------\n" +
+                        "---O-OXOO---\n" +
                         "-XOOOOOX----\n" +
-                        "-----OX-X---\n" +
+                        "-----OXXX---\n" +
                         "-----XOXXX--\n" +
-                        "----X---X---\n" +
+                        "----XOXXX---\n" +
                         "--------X--O\n" +
-                        "--O---------\n" +
+                        "--O-----O---\n" +
                         "------------\n",6);
-        boardToAdd.setLastMove(new Move(4, 3), Board.PieceType.CIRCLE);
-        boards.add(boardToAdd);
-        boardToAdd = new LoadedBoard(
-                "------------\n" +
-                        "-----X------\n" +
-                        "-----O------\n" +
-                        "-----O------\n" +
-                        "-----OX-O---\n" +
-                        "-XOOOOOXO---\n" +
-                        "-----OX-X---\n" +
-                        "-----XOXXX--\n" +
-                        "----X---X---\n" +
-                        "--------X--O\n" +
-                        "--O---------\n" +
-                        "------------\n",6);
-        boardToAdd.setLastMove(new Move(5, 8), Board.PieceType.CIRCLE);
+        boardToAdd.setLastMove(new Move(8, 5), Board.PieceType.CIRCLE);
         boards.add(boardToAdd);
         for (Board board: boards) {
             System.out.println(board.toString());
