@@ -1,5 +1,6 @@
 package com.photoncat.aiproj2.game;
 
+import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.interfaces.MutableBoard;
 
@@ -53,5 +54,10 @@ public class FlippedBoard implements MutableBoard {
     @Override
     public boolean gameover() {
         return board.gameover();
+    }
+
+    @Override
+    public String toString() {
+        return Board.toString(this);
     }
 }
