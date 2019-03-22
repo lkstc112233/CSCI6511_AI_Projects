@@ -22,7 +22,7 @@ public class SelfAdapter implements Adapter {
     public int createGame(int otherTeamId, int boardSize, int target) {
         int gameId = games.size() + 1;
         games.put(gameId, new SimpleBoard(boardSize, target));
-        crossPlaying.put(gameId, false);
+        crossPlaying.put(gameId, true);
         return gameId;
     }
 
@@ -31,7 +31,7 @@ public class SelfAdapter implements Adapter {
 
     @Override
     public void moveAt(int gameId, Move move) {
-        System.out.println("Player " + (gameId>0?"Cross":"Circle") + " moving: ");
+        System.out.println("Player " + (gameId>0?"Circle":"Cross") + " moving: ");
         if (gameId < 0) {
             gameId = -gameId;
         }
