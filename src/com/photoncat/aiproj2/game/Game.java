@@ -52,6 +52,7 @@ public class Game extends Thread{
         Board board = null;
         int minPossibleValue = Integer.MIN_VALUE;
         int maxPossibleValue = Integer.MAX_VALUE;
+        int depth = 0;
         MinMaxNode parent = null;
         void update(int value, boolean minLayer) {
             boolean updated = false;
@@ -94,6 +95,7 @@ public class Game extends Thread{
                         MinMaxNode childNode = new MinMaxNode();
                         childNode.move = move;
                         childNode.board = newBoard;
+                        childNode.depth = node.depth + 1;
                         childNode.parent = node;
                         int score = heuristics.heuristic(newBoard);
                         // cut-offs
@@ -143,6 +145,7 @@ public class Game extends Thread{
         }
         // Expand nodes with a thread pool.
         int expandedCount = 0;
+        final int MAX_DEPTH = 8;
         final ExecutorService threadPool = Executors.newFixedThreadPool(32);
         while (expandedCount < MAXIMUM_NODES_EXPANDED) {
             synchronized (this) {
@@ -164,17 +167,21 @@ public class Game extends Thread{
             synchronized (this) {
                 if (!maxLayerNodes.isEmpty()) {
                     MinMaxNode node = maxLayerNodes.poll().getKey();
-                    ExpandTask newTask = new ExpandTask(node, minLayerNodes, false);
-                    threadPool.execute(newTask);
-                    expandedCount += 1;
+                    if (node.depth < MAX_DEPTH) {
+                        ExpandTask newTask = new ExpandTask(node, minLayerNodes, false);
+                        threadPool.execute(newTask);
+                        expandedCount += 1;
+                    }
                 }
             }
             synchronized (this) {
                 if (!minLayerNodes.isEmpty()) {
                     MinMaxNode node = minLayerNodes.poll().getKey();
-                    ExpandTask newTask = new ExpandTask(node, maxLayerNodes, true);
-                    threadPool.execute(newTask);
-                    expandedCount += 1;
+                    if (node.depth < MAX_DEPTH) {
+                        ExpandTask newTask = new ExpandTask(node, maxLayerNodes, true);
+                        threadPool.execute(newTask);
+                        expandedCount += 1;
+                    }
                 }
             }
         }
