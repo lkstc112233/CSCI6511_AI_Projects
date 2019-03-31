@@ -2,6 +2,7 @@ package com.photoncat.aiproj2;
 
 import com.photoncat.aiproj2.game.Game;
 import com.photoncat.aiproj2.heuristic.Heuristic2;
+import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.io.Adapter;
 import com.photoncat.aiproj2.io.ConsoleAdapter;
 import com.photoncat.aiproj2.io.NetworkAdapter;
@@ -98,16 +99,18 @@ public class MainConsoleDev {
                     break;
                 case 3:{
                     Adapter consoleAdapter = new ConsoleAdapter();
-                    Game game;
-                    if (pick == 1) {
-                        game = new Game(consoleAdapter, teamId, boardSize, target, new Heuristic2());
-                    } else {
+                    Game game = new Game(consoleAdapter, teamId, boardSize, target, new Heuristic2());
+                    if (pick == 2) {
                         game = new Game(consoleAdapter, teamId, new Heuristic2());
                     }
                     game.start();
                     game.join();
                     System.out.println("Game over.");
-                    switch (consoleAdapter.getBoard(game.getGameId()).wins()) {
+                    Board.PieceType winner = consoleAdapter.getBoard(game.getGameId()).wins();
+                    if (pick == 2) {
+                        winner = winner.flipPiece();
+                    }
+                    switch (winner) {
                         case CROSS:
                             System.out.println("Cross wins.");
                             break;
