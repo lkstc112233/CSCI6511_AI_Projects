@@ -61,10 +61,23 @@ public class ConsoleAdapter implements Adapter{
     }
 
     private void getConsoleInput() {
-        // Get console input.
-        System.out.println(game.toString());
+        String board = game.toString();
+        String[] rows = board.split("\n");
+        for (int i = 0; i < rows.length; ++i) {
+            System.out.println(rows[i] + " <- " + i);
+        }
+        for (int i = 0; i < rows.length; i += 2) {
+            System.out.print(String.format("%1$2d", i));
+        }
+        System.out.println();
+        System.out.print(" ");
+        for (int i = 1; i < rows.length; i += 2) {
+            System.out.print(String.format("%1$2d", i));
+        }
+        System.out.println();
         System.out.println("  -> y");
         System.out.println("|\nv\nx");
+        // Get console input.
         int x;
         int y;
         int size = game.getSize();
