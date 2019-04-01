@@ -4,7 +4,6 @@ import com.photoncat.aiproj2.interfaces.Board;
 import com.photoncat.aiproj2.interfaces.Heuristics;
 import com.photoncat.aiproj2.interfaces.Move;
 import com.photoncat.aiproj2.io.Adapter;
-import com.photoncat.aiproj2.util.OnetimePriorityQueue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +49,18 @@ public class Game extends Thread{
     private class MinMaxNode {
         Move move = null;
         Board board = null;
+        int value = 0;
         int minPossibleValue = Integer.MIN_VALUE;
         int maxPossibleValue = Integer.MAX_VALUE;
-        int depth = 0;
         MinMaxNode parent = null;
-        void update(int value, boolean minLayer) {
+        boolean assign(int value, boolean minLayer) {
+            this.value = value;
+            if (parent != null) {
+                return parent.update(value, !minLayer);
+            }
+            return true;
+        }
+        boolean update(int value, boolean minLayer) {
             boolean updated = false;
             if (minLayer) {
                 if (maxPossibleValue > value) {
@@ -70,16 +76,17 @@ public class Game extends Thread{
             if (updated && parent != null) {
                 parent.update(value, !minLayer);
             }
+            return updated;
         }
     }
 
     private class ExpandTask implements Runnable{
         private final MinMaxNode node;
-        private final OnetimePriorityQueue<MinMaxNode> nextLayer;
+        private final List<MinMaxNode> secondLayer;
         private final boolean minLayer;
-        ExpandTask(MinMaxNode node, OnetimePriorityQueue<MinMaxNode> nextLayer, boolean minLayer) {
+        ExpandTask(MinMaxNode node, List<MinMaxNode> secondLayer, boolean minLayer) {
             this.node = node;
-            this.nextLayer = nextLayer;
+            this.secondLayer = secondLayer;
             this.minLayer = minLayer;
         }
         @Override
@@ -95,24 +102,12 @@ public class Game extends Thread{
                         MinMaxNode childNode = new MinMaxNode();
                         childNode.move = move;
                         childNode.board = newBoard;
-                        childNode.depth = node.depth + 1;
                         childNode.parent = node;
                         int score = heuristics.heuristic(newBoard);
-                        // cut-offs
-                        if (node.parent != null) {
-                            if (minLayer) {
-                                if (score > node.parent.maxPossibleValue) {
-                                    // Beta cut off
-                                    break;
-                                }
-                            } else if (score < node.parent.minPossibleValue) {
-                                // Alpha cut off
-                                break;
-                            }
-                        }
                         synchronized (Game.this) {
-                            childNode.update(score, minLayer);
-                            nextLayer.add(childNode, score);
+                            if (childNode.assign(score, minLayer)) {
+                                secondLayer.add(childNode);
+                            }
                         }
                     }
                 }
@@ -122,10 +117,10 @@ public class Game extends Thread{
 
     private Move minMaxSearch(Board board) {
         // Decide where to move.
+        MinMaxNode root = new MinMaxNode();
+        root.board = board;
         List<MinMaxNode> firstLayer = new ArrayList<>();
-        OnetimePriorityQueue<MinMaxNode> maxLayerNodes = new OnetimePriorityQueue<>(OnetimePriorityQueue.compareByMax);
-        OnetimePriorityQueue<MinMaxNode> minLayerNodes = new OnetimePriorityQueue<>();
-        final int MAXIMUM_NODES_EXPANDED = 20000;
+        List<MinMaxNode> nextLayer;
         for (int x = 0; x < board.getSize(); ++x) {
             for (int y = 0; y < board.getSize(); ++y) {
                 if (board.getPiece(x, y) == Board.PieceType.NONE) {
@@ -137,50 +132,34 @@ public class Game extends Thread{
                     MinMaxNode node = new MinMaxNode();
                     node.move = move;
                     node.board = newBoard;
-                    node.minPossibleValue = heuristics.heuristic(newBoard);
+                    node.parent = root;
+                    node.value = heuristics.heuristic(newBoard);
                     firstLayer.add(node);
-                    maxLayerNodes.add(node, node.minPossibleValue);
                 }
             }
         }
         // Expand nodes with a thread pool.
-        int expandedCount = 0;
-        final int MAX_DEPTH = 8;
         final ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(32);
-        while (expandedCount < MAXIMUM_NODES_EXPANDED) {
-            synchronized (this) {
-                if (maxLayerNodes.isEmpty() && minLayerNodes.isEmpty() && threadPool.getActiveCount() == 0) {
-                    break;
+        boolean isMinLayer = false;
+        nextLayer = firstLayer;
+        for (int i = 0; i < 2; ++i) {
+            List<MinMaxNode> newLayer = new ArrayList<>();
+            for (MinMaxNode node : nextLayer) {
+                synchronized (this) {
+                    ExpandTask newTask = new ExpandTask(node, newLayer, isMinLayer);
+                    threadPool.execute(newTask);
                 }
             }
-            synchronized (this) {
-                if (!maxLayerNodes.isEmpty()) {
-                    MinMaxNode node = maxLayerNodes.poll().getKey();
-                    if (node.depth < MAX_DEPTH) {
-                        ExpandTask newTask = new ExpandTask(node, minLayerNodes, false);
-                        threadPool.execute(newTask);
-                        expandedCount += 1;
-                    }
-                }
-            }
-            synchronized (this) {
-                if (!minLayerNodes.isEmpty()) {
-                    MinMaxNode node = minLayerNodes.poll().getKey();
-                    if (node.depth < MAX_DEPTH) {
-                        ExpandTask newTask = new ExpandTask(node, maxLayerNodes, true);
-                        threadPool.execute(newTask);
-                        expandedCount += 1;
-                    }
-                }
-            }
-            // Give the workers some time to finish.
-            if (expandedCount % 200 == 0) {
+            // Wait until all threads are done.
+            while (threadPool.getActiveCount() != 0) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(20);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+            isMinLayer = !isMinLayer;
+            nextLayer = newLayer;
         }
         threadPool.shutdown();
         try {
@@ -194,8 +173,8 @@ public class Game extends Thread{
         int maximumValue = Integer.MIN_VALUE;
         Move bestMove = null;
         for (MinMaxNode node: firstLayer) {
-            if (maximumValue < node.minPossibleValue) {
-                maximumValue = node.minPossibleValue;
+            if (maximumValue < node.maxPossibleValue) {
+                maximumValue = node.maxPossibleValue;
                 bestMove = node.move;
             }
         }
