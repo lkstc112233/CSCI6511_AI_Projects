@@ -91,7 +91,7 @@ public class Game extends Thread{
                         Board newBoard = new LightDraftBoard(
                                 node.board,
                                 move,
-                                minLayer ? Board.PieceType.CROSS : Board.PieceType.CIRCLE);
+                                minLayer ? Board.PieceType.CIRCLE : Board.PieceType.CROSS);
                         MinMaxNode childNode = new MinMaxNode();
                         childNode.move = move;
                         childNode.board = newBoard;
